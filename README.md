@@ -1,0 +1,2 @@
+# blezz
+Keystroke Launcher

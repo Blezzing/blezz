@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 
-#define CONFIG_PATH "/home/blezzing/Git/blezz/cfg/blezzrc"
+#define DEFAULT_CONFIG_PATH "/home/blezzing/Git/blezz/cfg/blezzrc"
 
 typedef struct Menu Menu;
 typedef struct Action Action;
@@ -93,14 +93,6 @@ void addItem(Item* item) {
     }
     
     allItems[allItemsCount++] = item;
-}
-
-char* fixPath(char* path) {
-	if (path == NULL) {
-		path = CONFIG_PATH;
-	}
-	printf("%s %s\n","Loading from path:", path);
-    return path;
 }
 
 char** getLines(FILE* file) {
@@ -245,7 +237,7 @@ Menu* buildMenuFromFile(char* path) {
     char** lines;
     Menu* rootMenu = NULL;
     
-	path = fixPath(path);
+    printf("%s %s","Loading structure from:",path); 
     file = fopen(path,"r"); //TODO: add some sort of errorhandling here, missing folders give segfault
     lines = getLines(file);
     fclose(file);
@@ -306,7 +298,8 @@ int selectElement(Menu* inMenu, char choice) {
 }
 
 int main(int argc, char *argv[]) {
-	currentMenu = buildMenuFromFile(NULL);
+	char* path = (argc >= 2)?argv[1]:DEFAULT_CONFIG_PATH;
+    currentMenu = buildMenuFromFile(path);
     
     int done = 0;
     while(done == 0) {

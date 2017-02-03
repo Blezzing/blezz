@@ -11,6 +11,7 @@ Go to the root dir and call make. I can not really recommend anyone using this i
 # Configuration
 Make a file with content of the form: (An example can be found in cfg/blezzrc)
 
+\#descriptive comment
 directiveTitle:
 dir(char,otherDirective)
 act(char,description,bashCommand)

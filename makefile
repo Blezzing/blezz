@@ -1,5 +1,14 @@
-install: ./src/main.c
-	gcc -Wall -g ./src/main.c -o ./bin/blezz
+CC=gcc
+CFLAGS=-c -Wall
+LDFLAGS=
+SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=./bin/blezz
 
-run: install
-	./bin/blezz
+all: $(SOURCES) $(EXECUTABLE)
+    
+$(EXECUTABLE): $(OBJECTS) 
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) $< -o $@

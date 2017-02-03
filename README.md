@@ -20,3 +20,6 @@ act(char,description,bashCommand)
 To run the file simply call it with a path to your configuration file like this:
 
 ./bin/blezz /home/USER/blezzrc
+
+# Dependencies
+Compiled with gcc, and using gnu c specific standard libraries (argp), so it might be a good idea to start with gcc..

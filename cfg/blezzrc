@@ -23,3 +23,4 @@ u:Update(action:echo update)
 menu:Applications
 t:Terminal(action:echo terminal)
 f:Firefox(action:firefox)
+v:VideoLan(action:vlc)

@@ -1,0 +1,15 @@
+Main:
+dir(w,Windows)
+dir(s,System)
+dir(a,Applications)
+act(z,Dank,echo bitch)
+
+Windows:
+act(q,Closei,echo kill)
+act(m,Minimize,echo mini)
+
+System:
+act(r,Reboot,echo reboot)
+
+Applications:
+act(f,Firefox,firefox)

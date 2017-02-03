@@ -1,26 +1,15 @@
-menu:Main
-w:Window(menu:Windows)
-d:Desktop(menu:Desktop)
-s:System(menu:System)
-a:Applications(menu:Applications)
+Main:
+dir(w,Windows)
+dir(s,System)
+dir(a,Applications)
+act(z,Dank,echo bitch)
 
-menu:Windows
-q:Close(action:echo kill)
-m:Minimize(action:echo min)
-f:Fullscreen(action:echo full)
-l:Fill left(action:echo left)
-r:Fill right(action:echo right)
+Windows:
+act(m,Minimize,echo mini)
+act(p,Close,echo fuck)
 
-menu:Desktop
-r:Refresh(action:echo refresh)
+System:
+act(r,Reboot,echo reboot)
 
-menu:System
-s:Shutdown(action:echo shutdown)
-l:Lock(action:echo lock)
-r:Restart(action:echo restart)
-u:Update(action:echo update)
-
-menu:Applications
-t:Terminal(action:echo terminal)
-f:Firefox(action:firefox)
-v:VideoLan(action:vlc)
+Applications:
+act(f,Firefox,firefox)

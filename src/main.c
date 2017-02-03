@@ -153,7 +153,8 @@ char** getLines(FILE* file) {
         memError();
     }
     
-    for (int i = 0; 1; i++) {
+    int i;
+    for (i = 0; 1; i++) {
         //do we need to allocate more lines?
         if (i >= lines_to_allocate) {
             lines_to_allocate = lines_to_allocate * 2;
@@ -180,8 +181,8 @@ char** getLines(FILE* file) {
             ;
         lines[i][j+1]='\0';
     }
+    configLines = i+1;
     
-    configLines = sizeof(lines)/sizeof(char*);
     return lines;   
 }
 
@@ -230,13 +231,13 @@ void printDir(Dir* dir) {
     
     for(int i = 0; i < savedDirs; i++) {
         if (allDirs[i]->parent == dir) {
-            printf("%c[%c] %s\n",DIR_SYMBOL,allDirs[i]->key, allDirs[i]->label);
+            printf("%c [%c] %s\n",DIR_SYMBOL, allDirs[i]->key, allDirs[i]->label);
         }
     }
     
     for(int i = 0; i < savedActs; i++) {
         if (allActs[i]->parent == dir) {
-            printf("%c[%c] %s\n",ACT_SYMBOL,allActs[i]->key, allActs[i]->label);
+            printf("%c [%c] %s\n",ACT_SYMBOL, allActs[i]->key, allActs[i]->label);
         }
     }            
 }
@@ -296,17 +297,6 @@ void inputLoop() {
     }
 }
 
-void printDebug() {
-    puts("DIRS:\n");
-    for(int i=1; i< savedDirs; i++)
-        printf("%c-%s>>%s\n",allDirs[i]->key,allDirs[i]->label,allDirs[i]->parent->label);
-    
-    
-    puts("ACTS:\n");
-    for(int i=0; i< savedActs; i++)
-        printf("%c-%s->%s\n",allActs[i]->key,allActs[i]->label,allActs[i]->command);
-}
-
 int main(int argc, char *argv[]) {
 	char* path = (argc >= 2)?argv[1]:DEFAULT_CONFIG_PATH;
     Dir* root = importStructure(path);
@@ -315,7 +305,6 @@ int main(int argc, char *argv[]) {
     dirStackPush(root);
     
     inputLoop();
-    //printDebug();
     
 	return 0;
 }

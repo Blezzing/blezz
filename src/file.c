@@ -64,7 +64,10 @@ Dir* importData(char* path) {
     
     Dir* currDir = NULL;
     for (int i = 0; lines[i] != NULL; i++) {
-        if (isDirDecl(lines[i])) {
+        if (lines[i][0] == '#') {//it's a comment
+            continue;
+        }
+        else if (isDirDecl(lines[i])) {
             Dir* dir = newDirFromDecl(lines[i]);
             dir = addDir(dir); //dir might be replaced with an already existing dir
             currDir = dir;

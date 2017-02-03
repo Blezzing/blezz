@@ -17,10 +17,13 @@ static char doc[] = "Blezz is a keybased application launcher, in a conceptual s
 
 //structure for storing parameters and their descriptions
 static struct argp_option options[] = {
-    {"verbose",  'v', 0,      0,  "Produce verbose output" },
-    {"quiet",    'q', 0,      0,  "Don't produce any output" },
-    {"silent",   's', 0,      OPTION_ALIAS },
-    {"config",   'c', "FILE", 0,  "Loads directives and actions from another file" },
+    {"verbose", 'v',    0,           0, "Produce verbose output" },
+    {"quiet",   'q',    0,           0, "Don't produce any output" },
+    {"silent",  's',    0,           OPTION_ALIAS },
+    {"config",  'c',    "FILE",      0, "Loads directives and actions from another file" },
+    {"actS",    -3,     "CHARACTER", 0, "Symbol to prepend actions" },
+    {"dirS",    -2,     "CHARACTER", 0, "Symbol to prepend directories" },
+    {"dirUpKey",-1,     "CHARACTER", 0, "Character used for going a directory up" },
     { 0 }
 };
 
@@ -28,21 +31,34 @@ static struct argp_option options[] = {
 struct arguments {
     char *args[2];
     int silent, verbose;
+    char dirUpKey, actS, dirS;
     char *configFile;
 };
+
+
+static struct arguments arguments;
 
 //parameter parsing function, following example of argp
 static error_t parse_opt (int key, char *arg, struct argp_state *state){
     struct arguments *arguments = state->input;
     switch (key){
-        case 'q': case 's':
+        case 'q': case 's': //silent
             arguments->silent = 1;
             break;
-        case 'v':
+        case 'v': //verbose
             arguments->verbose = 1;
             break;
-        case 'c':
+        case 'c': //config
             arguments->configFile = arg;
+            break;
+        case -1: //dirUpKey;
+            arguments->dirUpKey = arg[0];
+            break;
+        case -2: //dirS;
+            arguments->dirS = arg[0];
+            break;
+        case -3: //actS
+            arguments->actS = arg[0];
             break;
         case ARGP_KEY_ARG: //too many parameters
             if (state->arg_num >= 2) {argp_usage (state);}
@@ -68,20 +84,20 @@ void printDir(Dir* dir) {
     
     for(int i = 0; i < savedDirs; i++) {
         if (allDirs[i]->parent == dir) {
-            printf("%c [%c] %s\n",DIR_SYMBOL, allDirs[i]->key, allDirs[i]->label);
+            printf("%c [%c] %s\n",arguments.dirS, allDirs[i]->key, allDirs[i]->label);
         }
     }
     
     for(int i = 0; i < savedActs; i++) {
         if (allActs[i]->parent == dir) {
-            printf("%c [%c] %s\n",ACT_SYMBOL, allActs[i]->key, allActs[i]->label);
+            printf("%c [%c] %s\n",arguments.actS, allActs[i]->key, allActs[i]->label);
         }
     }            
 }
 
 //selection in a dir, changes state if it should
 int selectElement(Dir* dir, char choice) {
-    if(choice == LEVEL_UP_KEY) {
+    if(choice == arguments.dirUpKey) {
         dirStackPop();
         return dirStackIsEmpty();
     }
@@ -117,11 +133,12 @@ void inputLoop() {
 
 //gogogo!
 int main(int argc, char *argv[]) {
-    struct arguments arguments;
-    
     //Defaults
     arguments.silent = 0;
     arguments.verbose = 0;
+    arguments.actS = '!';
+    arguments.dirS = '>';
+    arguments.dirUpKey = '-';
     arguments.configFile = DEFAULT_CONFIG_PATH;
 
     //Parsing arguments
@@ -137,5 +154,6 @@ int main(int argc, char *argv[]) {
     //Starting
     inputLoop();
     
+    //Belive it or not, success!
 	return 0;
 }

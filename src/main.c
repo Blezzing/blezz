@@ -95,13 +95,15 @@ void printDir(Dir* dir) {
     }            
 }
 
-//selection in a dir, changes state if it should
+//selection in a dir, changes state if it should, if not returning 0 program should terminate.
 int selectElement(Dir* dir, char choice) {
+    //go dir up if dirUpKey
     if(choice == arguments.dirUpKey) {
         dirStackPop();
         return dirStackIsEmpty();
     }
     
+    //go to dir if a match is found
     for(int i = 0; i < savedDirs; i++) {
         if(allDirs[i]->parent == dir && allDirs[i]->key == choice){
             dirStackPush(allDirs[i]);
@@ -109,6 +111,7 @@ int selectElement(Dir* dir, char choice) {
         }
     }
     
+    //perform act if a match is found
     for(int i = 0; i < savedActs; i++) {
         if (allActs[i]->parent == dir && allActs[i]->key == choice){
             system(allActs[i]->command);

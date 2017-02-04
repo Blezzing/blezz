@@ -3,9 +3,4 @@
 
 int configLines;
 
-
-struct arguments globals;
-
-
-
 #endif

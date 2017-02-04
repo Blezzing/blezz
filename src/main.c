@@ -3,6 +3,7 @@
 #include<string.h>
 #include<argp.h>
 
+#include"gui.h"
 #include"types.h"
 #include"data.h"
 #include"main.h"
@@ -142,7 +143,7 @@ int main(int argc, char *argv[]) {
     arguments.actS = '!';
     arguments.dirS = '>';
     arguments.dirUpKey = '-';
-    arguments.configFile = DEFAULT_CONFIG_PATH;
+    arguments.configFile = "/home/blezzing/Git/blezz/cfg/blezzrc";
 
     //Parsing arguments
     argp_parse(&argp,argc,argv,0,0,&arguments);
@@ -154,6 +155,9 @@ int main(int argc, char *argv[]) {
     dirStackAlloc();
     dirStackPush(root);
     
+    guiStart();
+    guiEventLoop();
+
     //Starting
     inputLoop();
     

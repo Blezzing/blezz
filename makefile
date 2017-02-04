@@ -1,14 +1,18 @@
 CC=gcc
 CFLAGS=-c -g -Wall
 LDFLAGS=
-SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c
+SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c ./src/gui.c
+LIBS=
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=./bin/blezz
 
 all: $(SOURCES) $(EXECUTABLE)
     
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(LDFLAGS) $(OBJECTS) -lxcb -o $@
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -lxcb -o $@
+
+clean:
+	rm ./src/*.o

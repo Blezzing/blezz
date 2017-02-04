@@ -137,8 +137,8 @@ void inputLoop() {
 //gogogo!
 int main(int argc, char *argv[]) {
     //Defaults
-    arguments.silent = 0;
-    arguments.verbose = 0;
+    arguments.silent = 0;  //TODO: if 1, be silent
+    arguments.verbose = 0; //TODO: if 1, be verbose
     arguments.actS = '!';
     arguments.dirS = '>';
     arguments.dirUpKey = '-';

@@ -64,9 +64,9 @@ Dir* importData(char* path) {
     
     Dir* currDir = NULL;
     for (int i = 0; lines[i] != NULL; i++) {
-        if (lines[i][0] == '#') {//it's a comment
-            continue;
+        if (lines[i][0] == '#') {//it's a comment, do not consider following possibilities
         }
+
         else if (isDirDecl(lines[i])) {
             Dir* dir = newDirFromDecl(lines[i]);
             dir = addDir(dir); //dir might be replaced with an already existing dir
@@ -75,16 +75,21 @@ Dir* importData(char* path) {
                 root = dir;
             }
         }
+
         else if (isDirRef(lines[i])) {
             Dir* dir = newDirFromRef(lines[i],currDir);
             addDir(dir);
         }
+
         else if (isActRef(lines[i])) {
             Act* act = newActFromRef(lines[i],currDir);
             addAct(act);
-        }        
+        }    
+
+        free(lines[i]);    
     }
-    
+    free(lines);
+
     printf("%s %i\n%s %i\n","Dirs:", savedDirs, "Acts:", savedActs);
 
 	return root;

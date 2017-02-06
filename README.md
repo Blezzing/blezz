@@ -21,5 +21,19 @@ To run the file simply call it with a path to your configuration file like this:
 
 ./bin/blezz /home/USER/blezzrc
 
+# Controls
+For now:
+'ESC' -> closes the menu
+'-' -> goes up a level
+'a'-'z' -> bindable keys to go down a level
+
 # Dependencies
 Compiled with gcc, and using gnu c specific standard libraries (argp), so it might be a good idea to start with gcc..
+
+# TODO
+* Clean up the mess, move code to more appropiate files
+* Revoke the header files, and fix the dependency mess
+* Improve Makefile to include install and uninstall commands
+* Resize window at every draw, to fit the lines
+* Make WMs ignore window, to get free placement and no borders option
+* Make controls, and config of them, sane.

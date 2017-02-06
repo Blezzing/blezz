@@ -110,10 +110,26 @@ void guiStart() {
     updateData();
 }
 
+void clearWindow(){
+    xcb_rectangle_t rect = {0, 0, windowHeight, windowWidth};
+
+    uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
+    uint32_t values[2];
+    values[0] = screen->black_pixel;
+    values[1] = 0;
+
+    xcb_gcontext_t gc = xcb_generate_id (connection);
+    xcb_create_gc (connection, gc, window, mask, values);
+
+    xcb_poly_fill_rectangle(connection, window, gc, 1, &rect);
+}
+
 void drawAllText() {
+    clearWindow();
+
     for (int i = 0; i < numberOfLinesToPrint; i++)
     {
-        drawText (connection,screen,window,18, windowHeight - (20*i), linesToPrint[i]);
+        drawText (connection,screen,window,18,20*(i+1), linesToPrint[i]);
     }
 }
 
@@ -183,23 +199,21 @@ void guiEventLoop() {
             case XCB_KEY_RELEASE: {
                 xcb_key_release_event_t *kr = (xcb_key_release_event_t *)event;
                 if (kr->detail == 9) {
-                    free (event);
-                    xcb_disconnect(connection);
-                    return;
+                    finished = 1;
                 } else {
                     char q = getCharfromKeycode(kr->detail);
-                    free (event);
                     int r = selectElement(q);
                     if (r == 0) {
                         updateData();
-                        clearWindow();
                         drawAllText();
                     } else { 
-                        xcb_disconnect(connection); 
-                        return; 
+                        finished = 1; 
                     }
                 }
+                break;
             }
-        }        
+        }          
+        free (event);      
     }
+    xcb_disconnect(connection);
 }

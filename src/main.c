@@ -74,30 +74,39 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 //parsing information
 static struct argp argp = { options, parse_opt, "", doc };
 
-//presentation of a single directive in stdout
-void printDir(Dir* dir) {
-	if (dir == NULL) {
-		printf("Empty...");
-		return;
-	}
-	
-	printf("%s:\n",dir->label);
-    
+char** allocForDirToStrings() {
+    char** ret = (char**)malloc(sizeof(char*)*(savedActs+savedDirs+1));
+    for (int i = 0; i < savedActs+savedDirs+1; i++) {
+        ret[i] = (char*)malloc(sizeof(char)*32);
+    }
+    return ret;
+}
+
+//index parameter will tell how many lines are returned ASSUMING PRALLOCATED MEMORY
+void dirToStrings(char** ret, int* count) {
+    Dir* dir = dirStackPeek();
+    int index = 0;
+
+	sprintf(ret[index++],"%s:",dir->label);
+
     for(int i = 0; i < savedDirs; i++) {
         if (allDirs[i]->parent == dir) {
-            printf("%c [%c] %s\n",arguments.dirS, allDirs[i]->key, allDirs[i]->label);
+            sprintf(ret[index++],"%c [%c] %s",arguments.dirS, allDirs[i]->key, allDirs[i]->label);
         }
     }
     
     for(int i = 0; i < savedActs; i++) {
         if (allActs[i]->parent == dir) {
-            printf("%c [%c] %s\n",arguments.actS, allActs[i]->key, allActs[i]->label);
+            sprintf(ret[index++],"%c [%c] %s",arguments.actS, allActs[i]->key, allActs[i]->label);
         }
-    }            
+    }  
+
+    *count = index;        
 }
 
 //selection in a dir, changes state if it should, if not returning 0 program should terminate.
-int selectElement(Dir* dir, char choice) {
+int selectElement(char choice) {
+    Dir* dir = dirStackPeek();
     //go dir up if dirUpKey
     if(choice == arguments.dirUpKey) {
         dirStackPop();
@@ -123,18 +132,6 @@ int selectElement(Dir* dir, char choice) {
     return 0;
 }
 
-//looping until selection completes with empty dir stack or action selection
-void inputLoop() {
-    int done = 0;
-    while(done == 0) {
-        Dir* currentDir = dirStackPeek();
-        printDir(currentDir); 
-        char c = fgetc(stdin);
-        while(fgetc(stdin) != '\n'); //purge input
-        done = selectElement(currentDir,c);
-    }
-}
-
 //gogogo!
 int main(int argc, char *argv[]) {
     //Defaults
@@ -155,11 +152,9 @@ int main(int argc, char *argv[]) {
     dirStackAlloc();
     dirStackPush(root);
     
+    //Gui
     guiStart();
     guiEventLoop();
-
-    //Starting
-    inputLoop();
     
     //Belive it or not, success!
 	return 0;

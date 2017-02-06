@@ -4,9 +4,13 @@
 #include<string.h>
 
 #include"gui.h"
+#include"main.h"
 
-uint16_t windowHeight = (uint16_t)260;
-uint16_t windowWidth = (uint16_t)400;
+int windowHeight = 260;
+int windowWidth = 400;
+
+int numberOfLinesToPrint;
+char** linesToPrint = NULL;
 
 xcb_connection_t* connection = NULL;
 xcb_screen_t* screen = NULL;
@@ -67,6 +71,13 @@ static xcb_gc_t getFontGC (xcb_connection_t  *connection,
     return gc;
 }
 
+void updateData(){
+    if (linesToPrint == NULL) {
+        linesToPrint = allocForDirToStrings();
+    }
+    dirToStrings(linesToPrint,&numberOfLinesToPrint);
+}
+
 void guiStart() {
     int screenNum;
     
@@ -88,13 +99,22 @@ void guiStart() {
     values[0] = screen->black_pixel;
     values[1] = XCB_EVENT_MASK_KEY_RELEASE |
                 XCB_EVENT_MASK_EXPOSURE;
-    xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,20,200,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
+    xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,500,500,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
 
     xcb_void_cookie_t mapCookie = xcb_map_window_checked (connection, window);
     testCookie(mapCookie,connection,"can't map window");
 
     xcb_flush(connection);
+
+    updateData();
+}
+
+void drawAllText() {
+    for (int i = 0; i < numberOfLinesToPrint; i++)
+    {
+        drawText (connection,screen,window,10, windowHeight - (10*i), linesToPrint[i]);
+    }
 }
 
 void guiEventLoop() {
@@ -104,7 +124,7 @@ void guiEventLoop() {
         if((event = xcb_poll_for_event(connection))) {
             switch(event->response_type & ~0x80) { //what the actual fuck
                 case XCB_EXPOSE: {
-                    drawText (connection,screen,window,10, windowHeight -10, "PLZ WORK, like that would be amazing...");
+                    drawAllText();
                     break;
                 }
                 case XCB_KEY_RELEASE: {
@@ -115,6 +135,10 @@ void guiEventLoop() {
                             xcb_disconnect(connection);
                             return;
                         }
+                        default:
+                            printf("%i pressed... no handling\n",kr->detail);
+                            fflush(stdout);
+                            break;
                     }
                 }
             }

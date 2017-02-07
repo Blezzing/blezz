@@ -4,7 +4,7 @@
 #include<string.h>
 
 #include"gui.h"
-#include"main.h"
+#include"data.h"
 
 int windowHeight = 260;
 int windowWidth = 400;

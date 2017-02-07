@@ -1,10 +1,9 @@
-#include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 #include"file.h"
 #include"errors.h"
 #include"data.h"
-#include"string.h"
 
 char** getLines(FILE* file) {
     int lines_to_allocate = 64;

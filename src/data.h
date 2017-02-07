@@ -28,4 +28,8 @@ Dir* dirStackPeek();
 int  dirStackIsEmpty();
 void dirStackAlloc();
 
+char** allocForDirToStrings();
+char** dirToStrings(char** ret, int* count);
+int selectElement(char choice);
+
 #endif

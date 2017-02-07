@@ -1,8 +1,11 @@
 #include<stdlib.h>
 #include<string.h>
+#include<stdio.h>
+
 #include"types.h"
 #include"data.h"
 #include"consts.h"
+#include"argpass.h"
 
 int configLines = 0;
 
@@ -124,4 +127,64 @@ int dirStackIsEmpty() {
 
 void dirStackAlloc() {
     dirStack = (Dir**)malloc(sizeof(Dir*)*savedDirs);
+}
+
+//prepare array for storage of all strings to be printed
+char** allocForDirToStrings() {
+    char** ret = (char**)malloc(sizeof(char*)*(savedActs+savedDirs+1));
+    for (int i = 0; i < savedActs+savedDirs+1; i++) {
+        ret[i] = (char*)malloc(sizeof(char)*32);
+    }
+    return ret;
+}
+
+//index parameter will tell how many lines are returned ASSUMING PRALLOCATED MEMORY
+char** dirToStrings(char** ret, int* count) {
+    Dir* dir = dirStackPeek();
+    int index = 0;
+
+	sprintf(ret[index++],"%s:",dir->label);
+
+    for(int i = 0; i < savedDirs; i++) {
+        if (allDirs[i]->parent == dir) {
+            sprintf(ret[index++],"%c [%c] %s",arguments.dirS, allDirs[i]->key, allDirs[i]->label);
+        }
+    }
+    
+    for(int i = 0; i < savedActs; i++) {
+        if (allActs[i]->parent == dir) {
+            sprintf(ret[index++],"%c [%c] %s",arguments.actS, allActs[i]->key, allActs[i]->label);
+        }
+    }  
+
+    *count = index;
+    return ret; //purely for readability        
+}
+
+//selection in a dir, changes state if it should, if not returning 0 program should terminate.
+int selectElement(char choice) {
+    Dir* dir = dirStackPeek();
+    //go dir up if dirUpKey
+    if(choice == arguments.dirUpKey) {
+        dirStackPop();
+        return dirStackIsEmpty();
+    }
+    
+    //go to dir if a match is found
+    for(int i = 0; i < savedDirs; i++) {
+        if(allDirs[i]->parent == dir && allDirs[i]->key == choice){
+            dirStackPush(allDirs[i]);
+            return 0;
+        }
+    }
+    
+    //perform act if a match is found
+    for(int i = 0; i < savedActs; i++) {
+        if (allActs[i]->parent == dir && allActs[i]->key == choice){
+            system(allActs[i]->command);
+            return 1;
+        }
+    }
+    
+    return 0;
 }

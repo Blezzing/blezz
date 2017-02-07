@@ -7,10 +7,10 @@ Where I felt these were lacking was in the way they handled integration with the
 
 # Install
 make
-make install
+sudo make install
 
 # Uninstall
-make uninstall
+sudo make uninstall
 
 # Configuration
 Make a file with content of the form: (An example can be found in cfg/blezzrc)

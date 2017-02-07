@@ -4,7 +4,6 @@
 
 #include"types.h"
 #include"data.h"
-#include"consts.h"
 #include"argpass.h"
 
 int savedDirs = 0;
@@ -46,10 +45,10 @@ Dir* newDirFromDecl(char* string){
     int colonIndex = strcspn(string,":");
     
     Dir* dir = (Dir*)malloc(sizeof(Dir));
-    dir->key = NO_KEY;
+    dir->key = '\0';
     dir->label = (char*)malloc(sizeof(char)*(colonIndex+1));
     strncpy(dir->label,string,colonIndex);
-    dir->label[colonIndex]='\0';
+    dir->label[colonIndex]= '\0';
     dir->parent = NULL;
     
     return dir;
@@ -85,7 +84,7 @@ Dir* addDir(Dir* dir){
             if (allDirs[d]->parent == NULL) {
                 allDirs[d]->parent = dir->parent;
             }
-            if (allDirs[d]->key == NO_KEY) {
+            if (allDirs[d]->key == '\0') {
                 allDirs[d]->key = dir->key;
             }
             free(dir->label);

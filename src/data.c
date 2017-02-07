@@ -188,3 +188,8 @@ int selectElement(char choice) {
     
     return 0;
 }
+
+void dirStackInit() {
+    dirStackAlloc();
+    dirStackPush(startDir);
+}

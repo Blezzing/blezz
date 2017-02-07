@@ -51,7 +51,7 @@ char** getLines(FILE* file) {
     return lines;   
 }
 
-Dir* importData(char* path) {
+void importData(char* path) {
     FILE* file;
     char** lines;
     Dir* root = NULL;
@@ -91,5 +91,5 @@ Dir* importData(char* path) {
 
     printf("%s %i\n%s %i\n","Dirs:", savedDirs, "Acts:", savedActs);
 
-	return root;
+	startDir = root;
 }

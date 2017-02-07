@@ -11,7 +11,7 @@ struct arguments {
 
 struct arguments arguments;
 
-void setDefaultArguments();
-void applyArguments(int argc,char** argv);
+void argumentsInit();
+void argumentsApply(int argc,char** argv);
 
 #endif

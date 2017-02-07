@@ -54,7 +54,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 //parsing information
 static struct argp argp = { options, parse_opt, "", doc };
 
-void setDefaultArguments() {
+void argumentsInit() {
     arguments.silent = 0;  //TODO: if 1, be silent
     arguments.verbose = 0; //TODO: if 1, be verbose
     arguments.actS = '!';
@@ -63,6 +63,6 @@ void setDefaultArguments() {
     arguments.configFile = "/home/blezzing/Git/blezz/cfg/blezzrc";
 }
 
-void applyArguments(int argc, char** argv) {
+void argumentsApply(int argc, char** argv) {
     argp_parse(&argp,argc,argv,0,0,&arguments);
 }

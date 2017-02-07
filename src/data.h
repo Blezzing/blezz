@@ -11,6 +11,8 @@ Act** allActs;
 int   dirStackTop;
 Dir** dirStack;
 
+Dir* startDir;
+
 int isDirDecl(char* string);
 int isDirRef(char* string);
 int isActRef(char* string);
@@ -22,11 +24,11 @@ Act* newActFromRef(char* string, Dir* parent);
 Dir* addDir(Dir* dir);
 Act* addAct(Act* act);
 
+void dirStackInit();
 void dirStackPush(Dir* dir);
 void dirStackPop();
 Dir* dirStackPeek();
 int  dirStackIsEmpty();
-void dirStackAlloc();
 
 char** allocForDirToStrings();
 char** dirToStrings(char** ret, int* count);

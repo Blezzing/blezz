@@ -7,15 +7,14 @@
 //gogogo!
 int main(int argc, char *argv[]) {
     //Handle arguments
-    setDefaultArguments();
-    applyArguments(argc,argv);    
+    argumentsInit();
+    argumentsApply(argc,argv);    
 
     //Parse configuration files
-    Dir* root = importData(arguments.configFile);
+    importData(arguments.configFile);
     
     //Prepare datastructures
-    dirStackAlloc();
-    dirStackPush(root);
+    dirStackInit();
     
     //Show GUI
     guiStart();

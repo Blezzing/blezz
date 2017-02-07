@@ -7,6 +7,6 @@
 int configLines;
 
 char** getLines(FILE* file);
-Dir* importData(char* path);
+void importData(char* path);
 
 #endif

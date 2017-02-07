@@ -1,12 +1,14 @@
 Main:
-dir(w,Windows)
+dir(d,Develop)
+dir(o,Options)
 dir(s,System)
 dir(a,Applications)
-act(z,Dank,echo bitch)
 
-Windows:
-act(m,Minimize,echo mini)
-act(p,Close,echo fuck)
+Develop:
+act(b,Blezz dev,code ~/Git/blezz)
+
+Options:
+act(c,Blezz structure,code ~/Git/blezz/cfg/blezzrc)
 
 System:
 act(r,Reboot,echo reboot)

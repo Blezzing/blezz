@@ -1,8 +1,24 @@
 #ifndef DATAHEADER_H
 #define DATAHEADER_H
 
-int configLines;
+//Structures
+typedef struct Dir Dir;
+typedef struct Act Act;
 
+struct Dir{
+    char key;
+	char* label;
+    Dir* parent;
+};
+
+struct Act{
+    char key;
+    char* label;
+	char* command;
+    Dir* parent;
+};
+
+//Shared variables
 int   savedDirs;
 int   savedActs;
 Dir** allDirs;
@@ -13,6 +29,7 @@ Dir** dirStack;
 
 Dir* startDir;
 
+//Functions
 int isDirDecl(char* string);
 int isDirRef(char* string);
 int isActRef(char* string);

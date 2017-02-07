@@ -2,7 +2,6 @@
 #define FILEHEADER_H
 
 #include<stdio.h>
-#include"types.h"
 
 int configLines;
 

@@ -5,6 +5,7 @@ SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c ./src/gui.c ./src/
 LIBS=
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=./bin/blezz
+INSTALLDIR=/bin/
 
 all: $(SOURCES) $(EXECUTABLE)
     
@@ -16,3 +17,9 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm ./src/*.o
+
+install:
+	cp $(EXECUTABLE) $(INSTALLDIR)blezz
+
+uninstall:
+	rm $(INSTALLDIR)blezz

@@ -97,7 +97,7 @@ void guiStart() {
     uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
     uint32_t values[2];
     values[0] = screen->black_pixel;
-    values[1] = XCB_EVENT_MASK_KEY_RELEASE |
+    values[1] = XCB_EVENT_MASK_KEY_PRESS |
                 XCB_EVENT_MASK_EXPOSURE;
     xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,500,500,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
@@ -185,7 +185,6 @@ char getCharfromKeycode(int code){
     }
 }
 
-
 void guiEventLoop() {
     xcb_generic_event_t* event;  
     int finished = 0; 
@@ -196,7 +195,7 @@ void guiEventLoop() {
                 drawAllText();
                 break;
             }
-            case XCB_KEY_RELEASE: {
+            case XCB_KEY_PRESS: {
                 xcb_key_release_event_t *kr = (xcb_key_release_event_t *)event;
                 if (kr->detail == 9) {
                     finished = 1;
@@ -210,6 +209,9 @@ void guiEventLoop() {
                         finished = 1; 
                     }
                 }
+                break;
+            }
+            default: {
                 break;
             }
         }          

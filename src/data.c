@@ -7,8 +7,6 @@
 #include"consts.h"
 #include"argpass.h"
 
-int configLines = 0;
-
 int savedDirs = 0;
 int savedActs = 0;
 Dir** allDirs = NULL;

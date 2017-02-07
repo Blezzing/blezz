@@ -1,6 +1,5 @@
 #include"argpass.h"
 #include"gui.h"
-#include"types.h"
 #include"data.h"
 #include"file.h"
 

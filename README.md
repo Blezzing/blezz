@@ -38,8 +38,5 @@ Run: xcb.
 # TODO
 * Clean up the mess, move code to more appropiate files.
 * Revoke the header files, and fix the dependency mess.
-* Improve Makefile to include install and uninstall commands.
-* Resize window at every draw, to fit the lines.
-* Make WMs ignore window, to get free placement and no borders option.
 * Make better support for multiple keymaps.
 * Make controls, and config of them, sane.

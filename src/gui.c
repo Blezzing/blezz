@@ -21,12 +21,10 @@ xcb_connection_t* connection = NULL;
 xcb_screen_t* screen = NULL;
 xcb_window_t window = 0;
 
-static xcb_gc_t getFontGC (xcb_connection_t* c, xcb_screen_t* screen, xcb_window_t winndow, const char* font_name );
-static void drawText (xcb_connection_t *c, xcb_screen_t *screen, xcb_window_t window, int16_t x1, int16_t y1, const char* label );
+static xcb_gc_t getFontGC(xcb_connection_t* c, xcb_screen_t* screen, xcb_window_t winndow, const char* font_name);
+static void drawText(xcb_connection_t *c, xcb_screen_t *screen, xcb_window_t window, int16_t x1, int16_t y1, const char* label);
 
-static void testCookie (xcb_void_cookie_t cookie,
-                        xcb_connection_t *connection,
-                        char *errMessage ) {
+static void testCookie(xcb_void_cookie_t cookie, xcb_connection_t *connection, char *errMessage ) {
     xcb_generic_error_t *error = xcb_request_check (connection, cookie);
     if (error) {
         fprintf (stderr, "ERROR: %s : %i\n", errMessage , error->error_code);
@@ -42,23 +40,21 @@ int grabKeyboard(xcb_window_t w, int iters) {
             fprintf ( stderr, "Connection has error\n" );
             exit ( EXIT_FAILURE );
         }
-        xcb_grab_keyboard_cookie_t cc = xcb_grab_keyboard ( connection,
-                                                            1, window, XCB_CURRENT_TIME, XCB_GRAB_MODE_ASYNC,
-                                                            XCB_GRAB_MODE_ASYNC );
-        xcb_grab_keyboard_reply_t *r = xcb_grab_keyboard_reply ( connection, cc, NULL );
+        xcb_grab_keyboard_cookie_t cc = xcb_grab_keyboard(connection, 1, window, XCB_CURRENT_TIME, XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
+        xcb_grab_keyboard_reply_t *r = xcb_grab_keyboard_reply(connection, cc, NULL);
         if ( r ) {
             if ( r->status == XCB_GRAB_STATUS_SUCCESS ) {
                 free ( r );
-                return 1;
+                return 0;
             }
             free ( r );
         }
-        if ( ( ++i ) > iters ) {
+        if ( (++i) > iters ) {
             break;
         }
         usleep ( 1000 );
     }
-    return 0;
+    return 1;
 }
 
 void releaseKeyboard() {
@@ -91,15 +87,11 @@ static xcb_gc_t getFontGC (xcb_connection_t  *connection,
     xcb_gcontext_t gc = xcb_generate_id (connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_FONT;
     uint32_t value_list[3] = { screen->white_pixel, screen->black_pixel, font };
-    xcb_void_cookie_t gcCookie = xcb_create_gc_checked (connection,
-                                                        gc,
-                                                        window,
-                                                        mask,
-                                                        value_list );
+    xcb_void_cookie_t gcCookie = xcb_create_gc_checked(connection, gc, window, mask, value_list);
     testCookie(gcCookie, connection, "can't create gc");
 
     //close font
-    fontCookie = xcb_close_font_checked (connection, font);
+    fontCookie = xcb_close_font_checked(connection, font);
     testCookie(fontCookie, connection, "can't close font");
 
     //finish
@@ -150,7 +142,7 @@ void guiStart() {
     uint32_t values[2];
     values[0] = screen->black_pixel;
     values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_EXPOSURE;
-    xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,500,500,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
+    xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,windowX,windowY,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
 
     xcb_void_cookie_t mapCookie = xcb_map_window_checked (connection, window);
@@ -246,10 +238,9 @@ char getCharfromKeycode(int code){
 }
 
 void guiEventLoop() {
-    grabKeyboard(window,10);
     xcb_generic_event_t* event;  
-    int finished = 0; 
-    //whenever we get a new event, do... 
+    int finished = grabKeyboard(window,10); //Will return 1 if we never got keyboard input
+
     while(!finished && (event = xcb_wait_for_event(connection))) {
         switch(event->response_type & ~0x80) { //why this mask?...
             case XCB_EXPOSE: {
@@ -257,11 +248,11 @@ void guiEventLoop() {
                 break;
             }
             case XCB_KEY_PRESS: {
-                xcb_key_release_event_t *kr = (xcb_key_release_event_t *)event;
-                if (kr->detail == 9) {
+                xcb_key_press_event_t *kp = (xcb_key_press_event_t *)event;
+                if (kp->detail == 9) {
                     finished = 1;
                 } else {
-                    char q = getCharfromKeycode(kr->detail);
+                    char q = getCharfromKeycode(kp->detail);
                     int r = selectElement(q);
                     if (r == 0) {
                         updateData();
@@ -272,12 +263,25 @@ void guiEventLoop() {
                 }
                 break;
             }
+            case XCB_KEY_RELEASE: { break;}
             default: {
+                printf("%s %d\n","An unhandled event was received:", (event->response_type& ~0x80));
                 break;
             }
         }          
-        free (event);      
+        free (event); 
     }
-    releaseKeyboard();
+
+    //clear event queue
+    while ((event = xcb_poll_for_event(connection))) {
+        free(event);
+    }
+
+    //disconnect
+    xcb_disconnect(connection);
+    xcb_flush(connection);
+
+    //i'm sorry. This is needed to avoid hanging interface after levelup+another key pressed at the same time..
+    connection = xcb_connect(NULL,0);
     xcb_disconnect(connection);
 }

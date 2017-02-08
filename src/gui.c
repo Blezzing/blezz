@@ -7,7 +7,9 @@
 #include"data.h"
 
 int windowHeight = 260;
-int windowWidth = 400;
+int windowWidth = 600;
+int windowX = 0;
+int windowY = 0;
 
 int numberOfLinesToPrint;
 char** linesToPrint = NULL;
@@ -71,11 +73,15 @@ static xcb_gc_t getFontGC (xcb_connection_t  *connection,
     return gc;
 }
 
-void updateData(){
+void updateData() {
     if (linesToPrint == NULL) {
         linesToPrint = allocForDirToStrings();
     }
     dirToStrings(linesToPrint,&numberOfLinesToPrint);
+}
+
+void setWindowFlags() {
+    //
 }
 
 void guiStart() {
@@ -110,6 +116,19 @@ void guiStart() {
     updateData();
 }
 
+void updateWindowLocation() {
+    windowX = screen->height_in_pixels / 2;
+    windowY = screen->width_in_pixels / 2 - windowWidth / 2;
+
+    uint32_t values[] = { windowY, windowX };
+    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, values);
+}
+
+void updateWindowSize() {
+    uint32_t values[] = { (numberOfLinesToPrint * 20 + 16) };
+    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_HEIGHT, values);
+}
+
 void clearWindow(){
     xcb_rectangle_t rect = {0, 0, windowHeight, windowWidth};
 
@@ -125,6 +144,8 @@ void clearWindow(){
 }
 
 void drawAllText() {
+    updateWindowLocation();
+    updateWindowSize();
     clearWindow();
 
     for (int i = 0; i < numberOfLinesToPrint; i++)

@@ -1,7 +1,6 @@
 Main:
 dir(d,Develop)
 dir(o,Options)
-dir(s,System)
 dir(a,Applications)
 
 Develop:
@@ -10,8 +9,7 @@ act(b,Blezz dev,code ~/Git/blezz)
 Options:
 act(c,Blezz structure,code ~/Git/blezz/cfg/blezzrc)
 
-System:
-act(r,Reboot,echo reboot)
-
 Applications:
 act(f,Firefox,firefox)
+act(t,Terminal,konsole)
+act(s,Spectacle,spectacle)

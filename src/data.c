@@ -61,16 +61,21 @@ Act* newActFromRef(char* string, Dir* parent){
     int commandIndex = labelIndex + labelLength+1;
     int commandLength = strcspn(string+commandIndex,")");
     
+    char* disownString = "&disown";
+    int disownStringLength = 8;
+
     Act* act = (Act*)malloc(sizeof(Act));
     act->key = string[keyIndex];
     act->label = (char*)malloc(sizeof(char)*(labelLength+1));
     strncpy(act->label,string+labelIndex,labelLength);
     act->label[labelLength] = '\0';
-    act->command = (char*)malloc(sizeof(char)*(commandLength+1));
+    act->command = (char*)malloc(sizeof(char)*(commandLength+1+disownStringLength));
     strncpy(act->command,string+commandIndex,commandLength);
-    act->command[commandLength] = '\0';
+    strncpy(act->command+commandLength,disownString,disownStringLength);
+
+    act->command[commandLength+disownStringLength] = '\0';
     act->parent = parent;
-    
+
     return act;
 }
 

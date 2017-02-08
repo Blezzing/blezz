@@ -1,7 +1,10 @@
 #include<xcb/xcb.h>
+#include<xcb/xcb_ewmh.h>
+#include<xcb/xcb_icccm.h>
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
+#include<unistd.h>
 
 #include"gui.h"
 #include"data.h"
@@ -30,6 +33,36 @@ static void testCookie (xcb_void_cookie_t cookie,
         xcb_disconnect (connection);
         exit (-1);
     }
+}
+
+int grabKeyboard(xcb_window_t w, int iters) {
+    int i = 0;
+    while(1) {
+        if ( xcb_connection_has_error ( connection ) ) {
+            fprintf ( stderr, "Connection has error\n" );
+            exit ( EXIT_FAILURE );
+        }
+        xcb_grab_keyboard_cookie_t cc = xcb_grab_keyboard ( connection,
+                                                            1, window, XCB_CURRENT_TIME, XCB_GRAB_MODE_ASYNC,
+                                                            XCB_GRAB_MODE_ASYNC );
+        xcb_grab_keyboard_reply_t *r = xcb_grab_keyboard_reply ( connection, cc, NULL );
+        if ( r ) {
+            if ( r->status == XCB_GRAB_STATUS_SUCCESS ) {
+                free ( r );
+                return 1;
+            }
+            free ( r );
+        }
+        if ( ( ++i ) > iters ) {
+            break;
+        }
+        usleep ( 1000 );
+    }
+    return 0;
+}
+
+void releaseKeyboard() {
+    xcb_ungrab_keyboard ( connection, XCB_CURRENT_TIME );
 }
 
 static void drawText(xcb_connection_t  *connection,
@@ -73,6 +106,14 @@ static xcb_gc_t getFontGC (xcb_connection_t  *connection,
     return gc;
 }
 
+void updateWindowLocation() {
+    windowX = screen->height_in_pixels / 2;
+    windowY = screen->width_in_pixels / 2 - windowWidth / 2;
+
+    uint32_t values[] = { windowY, windowX };
+    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, values);
+}
+
 void updateData() {
     if (linesToPrint == NULL) {
         linesToPrint = allocForDirToStrings();
@@ -80,8 +121,13 @@ void updateData() {
     dirToStrings(linesToPrint,&numberOfLinesToPrint);
 }
 
-void setWindowFlags() {
-    //
+void updateWindowFlags() {
+    //This code is based on conversation from https://lists.freedesktop.org/archives/xcb/2010-December/006718.html it is not pretty, but it works.
+    xcb_intern_atom_cookie_t cookie = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE"),"_NET_WM_WINDOW_TYPE");
+    xcb_intern_atom_reply_t* reply = xcb_intern_atom_reply(connection, cookie, 0);
+    xcb_intern_atom_cookie_t cookie2 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE_DOCK"), "_NET_WM_WINDOW_TYPE_DOCK");
+    xcb_intern_atom_reply_t* reply2 = xcb_intern_atom_reply(connection, cookie2, 0);
+    xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, reply->atom, XCB_ATOM_ATOM, 32, 1, &(reply2->atom));
 }
 
 void guiStart() {
@@ -103,25 +149,19 @@ void guiStart() {
     uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
     uint32_t values[2];
     values[0] = screen->black_pixel;
-    values[1] = XCB_EVENT_MASK_KEY_PRESS |
-                XCB_EVENT_MASK_EXPOSURE;
+    values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_EXPOSURE;
     xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,500,500,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
 
     xcb_void_cookie_t mapCookie = xcb_map_window_checked (connection, window);
     testCookie(mapCookie,connection,"can't map window");
 
+
+    updateWindowFlags();
+    updateWindowLocation();
     xcb_flush(connection);
 
     updateData();
-}
-
-void updateWindowLocation() {
-    windowX = screen->height_in_pixels / 2;
-    windowY = screen->width_in_pixels / 2 - windowWidth / 2;
-
-    uint32_t values[] = { windowY, windowX };
-    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, values);
 }
 
 void updateWindowSize() {
@@ -144,7 +184,6 @@ void clearWindow(){
 }
 
 void drawAllText() {
-    updateWindowLocation();
     updateWindowSize();
     clearWindow();
 
@@ -207,11 +246,12 @@ char getCharfromKeycode(int code){
 }
 
 void guiEventLoop() {
+    grabKeyboard(window,10);
     xcb_generic_event_t* event;  
     int finished = 0; 
     //whenever we get a new event, do... 
     while(!finished && (event = xcb_wait_for_event(connection))) {
-        switch(event->response_type & ~0x80) { //what the actual fuck
+        switch(event->response_type & ~0x80) { //why this mask?...
             case XCB_EXPOSE: {
                 drawAllText();
                 break;
@@ -238,5 +278,6 @@ void guiEventLoop() {
         }          
         free (event);      
     }
+    releaseKeyboard();
     xcb_disconnect(connection);
 }

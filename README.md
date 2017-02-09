@@ -77,11 +77,4 @@ Until better configuration of controls, this is the default.
 `argp` and `xcb` is the only libraries used to build this project.
 
 ## TODO
-This list is not prioritized, and only shows currently known needed improvements.
-* Should support keymaps. (Currently hardcoded.. yeaa..)
-* Provide color options.
-* Provide size options.
-* Provide placement options.
-* Provide better control options.
-* Provide option to set another start directory.
-* Click outside window should make it exit.
+See project page. Any help is gladly taken.

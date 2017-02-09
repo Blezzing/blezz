@@ -13,7 +13,7 @@ sudo make install
 sudo make uninstall
 
 # Configuration
-Make a file with content of the form: (An example can be found in cfg/blezzrc)
+Make a file with content of the form: (An example can be found in cfg/content)
 
 \#descriptive comment
 directiveTitle:
@@ -23,7 +23,7 @@ act(char,description,bashCommand)
 # Run
 To run the file simply call it with a path to your configuration file like this:
 
-./bin/blezz -c /home/USER/blezzrc
+./bin/blezz -c /home/USER/content
 
 # Controls
 For now:

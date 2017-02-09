@@ -18,6 +18,9 @@ $(EXECUTABLE): $(OBJECTS)
 clean:
 	rm ./src/*.o
 
+run:
+	$(EXECUTABLE)
+
 install:
 	cp $(EXECUTABLE) $(INSTALLDIR)blezz
 

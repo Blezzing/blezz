@@ -5,12 +5,17 @@
 
 //gogogo!
 int main(int argc, char *argv[]) {
-    //Handle arguments
+    //Prepare arguments
     argumentsInit();
-    argumentsApply(argc,argv);    
 
-    //Parse configuration files
-    importData(arguments.configFile);
+    //Overwrite from arguments
+    argumentsApply(argc,argv);   
+
+    //Overwrite from config
+    importConfig(arguments.configFile); 
+
+    //Load content
+    importContent(arguments.contentFile);
     
     //Prepare datastructures
     dirStackInit();

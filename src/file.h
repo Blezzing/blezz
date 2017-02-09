@@ -4,8 +4,9 @@
 #include<stdio.h>
 
 int configLines;
+int contentLines;
 
-char** getLines(FILE* file);
-void importData(char* path);
+void importConfig(char* path);
+void importContent(char* path);
 
 #endif

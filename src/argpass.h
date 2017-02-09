@@ -6,7 +6,7 @@ struct arguments {
     char *args[2];
     int silent, verbose;
     char dirUpKey, actS, dirS;
-    char *configFile;
+    char *configFile, *contentFile, *font;
 };
 
 struct arguments arguments;

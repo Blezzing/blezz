@@ -3,6 +3,7 @@
 
 #include"file.h"
 #include"errors.h"
+#include"argpass.h"
 #include"data.h"
 
 char** getLines(FILE* file) {
@@ -46,17 +47,17 @@ char** getLines(FILE* file) {
             ;
         lines[i][j+1]='\0';
     }
-    configLines = i+1;
+    contentLines = i+1;
     
     return lines;   
 }
 
-void importData(char* path) {
+void importContent(char* path) {
     FILE* file;
     char** lines;
     Dir* root = NULL;
     
-    printf("%s %s\n","Loading structure from:",path); 
+    printf("%s %s\n","Loading content from:",path); 
     file = fopen(path,"r"); //TODO: add errorhandling here, missing folders give segfault
     lines = getLines(file);
     fclose(file);
@@ -89,7 +90,39 @@ void importData(char* path) {
     }
     free(lines);
 
-    printf("%s %i\n%s %i\n","Dirs:", savedDirs, "Acts:", savedActs);
+    printf("\tLoaded %i directories\n\tLoaded %i actions\n",savedDirs, savedActs);
 
 	startDir = root;
+}
+
+int startsWithString(char* check, char* string) {
+    int cLen = strlen(check);
+    int sLen = strlen(string);
+    if (cLen >= sLen) {
+        return (strncmp(check,string,sLen))?0:1;
+    } else {
+        return 0;
+    }
+}
+
+void importConfig(char* path) {
+    FILE* file;
+    char** lines;
+
+    printf("%s %s\n","Loading config from:",path); 
+    file = fopen(path,"r");
+    lines = getLines(file);
+    fclose(file);
+
+    for (int i = 0; lines[i] != NULL; i++) {
+        if (startsWithString(lines[i],"font=")) {
+            int sizeSource = strlen("font=");
+            int sizeNew = strlen(lines[i])-sizeSource+1;
+            arguments.font=(char*)malloc(sizeNew*sizeof(char));
+            strncpy(arguments.font,lines[i]+sizeSource,sizeNew);
+            printf("\t%s got assigned %s\n","Font",arguments.font);
+        }
+        free(lines[i]);
+    }
+    free(lines);
 }

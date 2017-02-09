@@ -8,6 +8,7 @@
 
 #include"gui.h"
 #include"data.h"
+#include"argpass.h"
 
 int windowHeight = 260;
 int windowWidth = 600;
@@ -67,7 +68,7 @@ static void drawText(xcb_connection_t  *connection,
                      int16_t            x1,
                      int16_t            y1,
                      const char        *label ) {
-    xcb_gcontext_t gc = getFontGC(connection,screen,window,"fixed");
+    xcb_gcontext_t gc = getFontGC(connection,screen,window,arguments.font);
     xcb_void_cookie_t textCookie = xcb_image_text_8_checked(connection,strlen(label),window,gc,x1,y1,label);
     testCookie(textCookie,connection,"can't paste text");
     xcb_void_cookie_t gcCookie = xcb_free_gc(connection,gc);
@@ -272,7 +273,7 @@ void guiEventLoop() {
         free (event); 
     }
 
-    //clear event queue
+    //clear event queue, not sure if needed, but why not?
     while ((event = xcb_poll_for_event(connection))) {
         free(event);
     }
@@ -281,7 +282,7 @@ void guiEventLoop() {
     xcb_disconnect(connection);
     xcb_flush(connection);
 
-    //i'm sorry. This is needed to avoid hanging interface after levelup+another key pressed at the same time..
+    //i'm sorry. This is needed to avoid hanging interface after levelup+another key pressed at the same time from root menu..
     connection = xcb_connect(NULL,0);
     xcb_disconnect(connection);
 }

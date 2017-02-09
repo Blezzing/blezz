@@ -81,7 +81,7 @@ Act* newActFromRef(char* string, Dir* parent){
 
 Dir* addDir(Dir* dir){
     if (allDirs==NULL) {
-        allDirs = (Dir**)malloc(sizeof(Dir*)*configLines);
+        allDirs = (Dir**)malloc(sizeof(Dir*)*contentLines);
     }
     
     for (int d = 0; d < savedDirs; d++) {
@@ -104,7 +104,7 @@ Dir* addDir(Dir* dir){
 
 Act* addAct(Act* act){
     if (allActs==NULL) {
-        allActs = (Act**)malloc(sizeof(Act*)*configLines);
+        allActs = (Act**)malloc(sizeof(Act*)*contentLines);
     }
     
     return allActs[savedActs++] = act;

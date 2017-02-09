@@ -1,0 +1,22 @@
+Main:
+dir(d,Develop)
+dir(o,Options)
+dir(a,Applications)
+dir(s,System)
+
+Develop:
+act(b,Blezz dev,code ~/Git/blezz)
+act(v,Gnome boxes,gnome-boxes)
+
+Options:
+act(b,Blezz structure,leafpad ~/Git/blezz/cfg/content)
+act(t,Tint2 config,leafpad ~/Git/dotfiles/tint2/tint2rc)
+
+Applications:
+act(f,Firefox,firefox)
+act(t,Terminal,konsole)
+act(s,Spectacle,spectacle)
+
+System:
+act(s,Shutdown,shutdown now)
+act(r,Reboot,reboot)

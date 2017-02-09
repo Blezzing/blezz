@@ -12,7 +12,9 @@ static struct argp_option options[] = {
     {"verbose", 'v',    0,           0, "Produce verbose output" },
     {"quiet",   'q',    0,           0, "Don't produce any output" },
     {"silent",  's',    0,           OPTION_ALIAS },
-    {"config",  'c',    "FILE",      0, "Loads directives and actions from another file" },
+    {"content", 'p',    "FILE",      0, "Loads directives and actions from another file" },
+    {"config",  'c',    "FILE",      0, "Loads arguments from another file" },
+    {"font",    'f',    "font",      0, "Font to use in presentation" },
     {"actS",    -3,     "CHARACTER", 0, "Symbol to prepend actions" },
     {"dirS",    -2,     "CHARACTER", 0, "Symbol to prepend directories" },
     {"dirUpKey",-1,     "CHARACTER", 0, "Character used for going a directory up" },
@@ -31,6 +33,12 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
             break;
         case 'c': //config
             arguments->configFile = arg;
+            break;
+        case 'p': //content
+            arguments->contentFile = arg;
+            break;
+        case 'f': //font
+            arguments->font = arg;
             break;
         case -1: //dirUpKey;
             arguments->dirUpKey = arg[0];
@@ -60,7 +68,9 @@ void argumentsInit() {
     arguments.actS = '!';
     arguments.dirS = '>';
     arguments.dirUpKey = '-';
-    arguments.configFile = "/home/blezzing/Git/blezz/cfg/blezzrc";
+    arguments.configFile = "/home/blezzing/Git/blezz/cfg/config";
+    arguments.contentFile = "/home/blezzing/Git/blezz/cfg/content";
+    arguments.font = "fixed";
 }
 
 void argumentsApply(int argc, char** argv) {

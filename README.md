@@ -50,9 +50,10 @@ A very basic configuration file can be formed by a single type of statements.
 name=value
 ```
 The options for this file is: (This is being heavily expanded currently)
+
 |Name|Value|
 |---:|:----|
-|font|name of an x font (find by using xlsfonts)|
+|font|name of an x font (find by using 'xlsfonts`|
 
 (An example can be found in `cfg/config`)
 

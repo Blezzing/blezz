@@ -21,7 +21,8 @@
 *.dylib
 
 # Executables
-*/bin/*
+.vscode/
+bin/
 *.exe
 *.out
 *.app

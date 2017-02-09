@@ -21,7 +21,6 @@ int main(int argc, char *argv[]) {
     dirStackInit();
     
     //Show GUI
-    guiStart();
     guiEventLoop();
     
     //Belive it or not, success!

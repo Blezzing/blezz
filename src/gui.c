@@ -19,6 +19,7 @@ int numberOfLinesToPrint;
 char** linesToPrint = NULL;
 
 xcb_connection_t* connection = NULL;
+int screenNumber = 0;
 xcb_screen_t* screen = NULL;
 xcb_window_t window = 0;
 
@@ -34,7 +35,7 @@ static void testCookie(xcb_void_cookie_t cookie, xcb_connection_t *connection, c
     }
 }
 
-int grabKeyboard(xcb_window_t w, int iters) {
+int grabKeyboard(int iters) {
     int i = 0;
     while(1) {
         if ( xcb_connection_has_error ( connection ) ) {
@@ -116,28 +117,27 @@ void updateData() {
 
 void updateWindowFlags() {
     //This code is based on conversation from https://lists.freedesktop.org/archives/xcb/2010-December/006718.html it is not pretty, but it works.
-    xcb_intern_atom_cookie_t cookie = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE"),"_NET_WM_WINDOW_TYPE");
-    xcb_intern_atom_reply_t* reply = xcb_intern_atom_reply(connection, cookie, 0);
+    xcb_intern_atom_cookie_t cookie1 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE"),"_NET_WM_WINDOW_TYPE");
+    xcb_intern_atom_reply_t* reply = xcb_intern_atom_reply(connection, cookie1, 0);
     xcb_intern_atom_cookie_t cookie2 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE_DOCK"), "_NET_WM_WINDOW_TYPE_DOCK");
     xcb_intern_atom_reply_t* reply2 = xcb_intern_atom_reply(connection, cookie2, 0);
     xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, reply->atom, XCB_ATOM_ATOM, 32, 1, &(reply2->atom));
 }
 
-void guiStart() {
-    int screenNum;
-    
-    //get connection
-    connection = xcb_connect(NULL,&screenNum);
-    
-    //get screen
+void connectionInit() {
+    connection = xcb_connect(NULL,&screenNumber);
+}
+
+void screenInit() {
     const xcb_setup_t* setup = xcb_get_setup(connection);
     xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
-    for(int i = 0; i < screenNum; ++i) {
+    for(int i = 0; i < screenNumber; ++i) {
         xcb_screen_next(&iter);
     }
     screen = iter.data;
+}
 
-    //get window
+void windowInit() {
     window = xcb_generate_id(connection);
     uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
     uint32_t values[2];
@@ -145,13 +145,22 @@ void guiStart() {
     values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_EXPOSURE;
     xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,windowX,windowY,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
+}
 
+void mapWindow() {
     xcb_void_cookie_t mapCookie = xcb_map_window_checked (connection, window);
     testCookie(mapCookie,connection,"can't map window");
+}
 
+void guiStart() {
+    connectionInit();
+    screenInit();
+    windowInit();
+    mapWindow();
+    xcb_flush(connection);
 
     updateWindowFlags();
-    updateWindowLocation();
+    updateWindowLocation();    
     xcb_flush(connection);
 
     updateData();
@@ -180,8 +189,7 @@ void drawAllText() {
     updateWindowSize();
     clearWindow();
 
-    for (int i = 0; i < numberOfLinesToPrint; i++)
-    {
+    for (int i = 0; i < numberOfLinesToPrint; i++) {
         drawText (connection,screen,window,18,20*(i+1), linesToPrint[i]);
     }
 }
@@ -238,45 +246,40 @@ char getCharfromKeycode(int code){
     }
 }
 
-void guiEventLoop() {
-    xcb_generic_event_t* event;  
-    int finished = grabKeyboard(window,10); //Will return 1 if we never got keyboard input
+int handleEvent(xcb_generic_event_t* event) {
+    int shouldFinishAfter = 0;
+    switch(event->response_type & ~0x80) { //why this mask?...
+        case XCB_EXPOSE: {
+            drawAllText();
+            break;
+        }
+        case XCB_KEY_PRESS: {
+            xcb_keycode_t keycode = ((xcb_key_press_event_t *)event)->detail;
+            if (keycode == 9) {
+                shouldFinishAfter = 1;
+                break;
+            }
 
-    while(!finished && (event = xcb_wait_for_event(connection))) {
-        switch(event->response_type & ~0x80) { //why this mask?...
-            case XCB_EXPOSE: {
-                drawAllText();
+            char character = getCharfromKeycode(keycode);
+            int exitSelection = selectElement(character);
+            if (exitSelection) {
+                shouldFinishAfter = 1; 
                 break;
             }
-            case XCB_KEY_PRESS: {
-                xcb_key_press_event_t *kp = (xcb_key_press_event_t *)event;
-                if (kp->detail == 9) {
-                    finished = 1;
-                } else {
-                    char q = getCharfromKeycode(kp->detail);
-                    int r = selectElement(q);
-                    if (r == 0) {
-                        updateData();
-                        drawAllText();
-                    } else { 
-                        finished = 1; 
-                    }
-                }
-                break;
-            }
-            case XCB_KEY_RELEASE: { break;}
-            default: {
-                printf("%s %d\n","An unhandled event was received:", (event->response_type& ~0x80));
-                break;
-            }
-        }          
-        free (event); 
-    }
+            
+            updateData();
+            drawAllText();
+            break;
+        }
+    } 
+    free(event);
 
-    //clear event queue, not sure if needed, but why not?
-    while ((event = xcb_poll_for_event(connection))) {
-        free(event);
-    }
+    return shouldFinishAfter;
+}
+
+void guiEnd() {
+    //give back control
+    releaseKeyboard();
 
     //disconnect
     xcb_disconnect(connection);
@@ -285,4 +288,17 @@ void guiEventLoop() {
     //i'm sorry. This is needed to avoid hanging interface after levelup+another key pressed at the same time from root menu..
     connection = xcb_connect(NULL,0);
     xcb_disconnect(connection);
+    xcb_flush(connection);
+}
+
+void guiEventLoop() {
+    guiStart();
+
+    int finished = grabKeyboard(10);   //return 1 if failure
+    xcb_generic_event_t* event;  
+    while(!finished && (event = xcb_wait_for_event(connection))) {
+        finished = handleEvent(event); //return 1 if an expected exit condition is met
+    }
+
+    guiEnd();
 }

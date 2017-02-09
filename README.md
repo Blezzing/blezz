@@ -57,14 +57,17 @@ The options for this file is: (This is being heavily expanded currently)
 
 (An example can be found in `cfg/config`)
 
-## Run
-To run the file simply call it with a path to your configuration file like this:
+## Usage
+How to start, control, and exit Blezz.
+
+### Start
+To run Blezz, simply call it with optional paths to your configuration file like this:
 
 ```
 ./bin/blezz -c ./cfg/config -p ./cfg/content
 ```
 
-## Controls
+### Controls
 Until better configuration of controls, this is the default.
 
 |Key|Action|
@@ -72,6 +75,9 @@ Until better configuration of controls, this is the default.
 |ESC'|closes the menu.|
 |'-'|goes up a level.|
 |'A'-'Z'|select an element.|
+
+### Exit
+Terminate Blezz by pressing the close button, by default ESC, or going a level up at the starting directory, by default with '-'.
 
 ## Dependencies
 `argp` and `xcb` is the only libraries used to build this project.

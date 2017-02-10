@@ -3,5 +3,6 @@
 
 void memError();
 void fileError();
+void guiError(char* message);
 
 #endif

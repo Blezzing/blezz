@@ -9,6 +9,7 @@
 #include"gui.h"
 #include"data.h"
 #include"argpass.h"
+#include"errors.h"
 
 int windowHeight = 260;
 int windowWidth = 600;
@@ -29,9 +30,8 @@ static void drawText(xcb_connection_t *c, xcb_screen_t *screen, xcb_window_t win
 static void testCookie(xcb_void_cookie_t cookie, xcb_connection_t *connection, char *errMessage ) {
     xcb_generic_error_t *error = xcb_request_check (connection, cookie);
     if (error) {
-        fprintf (stderr, "ERROR: %s : %i\n", errMessage , error->error_code);
         xcb_disconnect (connection);
-        exit (-1);
+        guiError(errMessage);
     }
 }
 
@@ -39,8 +39,7 @@ int grabKeyboard(int iters) {
     int i = 0;
     while(1) {
         if ( xcb_connection_has_error ( connection ) ) {
-            fprintf ( stderr, "Connection has error\n" );
-            exit ( EXIT_FAILURE );
+            guiError("Error in connection while grabbing keyboard").
         }
         xcb_grab_keyboard_cookie_t cc = xcb_grab_keyboard(connection, 1, window, XCB_CURRENT_TIME, XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
         xcb_grab_keyboard_reply_t *r = xcb_grab_keyboard_reply(connection, cc, NULL);
@@ -261,14 +260,14 @@ int handleEvent(xcb_generic_event_t* event) {
             }
 
             char character = getCharfromKeycode(keycode);
-            int exitSelection = selectElement(character);
-            
-            if (exitSelection == ELEMENT_SELECTION_OVER) {
+            int selectionResult = selectElement(character);
+
+            if (selectionResult == ELEMENT_SELECTION_OVER) {
                 shouldFinishAfter = 1; 
                 break;
             }
             
-            if (exitSelection == ELEMENT_SELECTION_FALSE) {
+            if (selectionResult == ELEMENT_SELECTION_FALSE) {
                 break;
             }
             

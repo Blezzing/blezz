@@ -39,7 +39,7 @@ int grabKeyboard(int iters) {
     int i = 0;
     while(1) {
         if ( xcb_connection_has_error ( connection ) ) {
-            guiError("Error in connection while grabbing keyboard").
+            guiError("Error in connection while grabbing keyboard");
         }
         xcb_grab_keyboard_cookie_t cc = xcb_grab_keyboard(connection, 1, window, XCB_CURRENT_TIME, XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
         xcb_grab_keyboard_reply_t *r = xcb_grab_keyboard_reply(connection, cc, NULL);

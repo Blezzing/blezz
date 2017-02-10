@@ -6,7 +6,6 @@
 #define ELEMENT_SELECTION_TRUE 1
 #define ELEMENT_SELECTION_OVER 2
 
-
 //Structures
 typedef struct Dir Dir;
 typedef struct Act Act;

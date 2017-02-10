@@ -51,9 +51,13 @@ name=value
 ```
 The options for this file is: (This is being heavily expanded currently)
 
-|Name|Value|
-|---:|:----|
-|font|name of an x font (find by using `xlsfonts`)|
+|Name|Value|Default|
+|---:|:----|:------|
+|font|name of an x font (find by using `xlsfonts`)|`fixed`|
+|directoryUpKey|character that on keypress will go a level up|`-`|
+|actionIndicator|character shown before actions to indicate that they are actions|`!`|
+|directoryIndicator|character shown before directories to indicate that they are directories|`>`|
+|startDirectory|name of the start directory|`Main`|
 
 (An example can be found in `cfg/config`)
 
@@ -64,23 +68,23 @@ How to start, control, and exit Blezz.
 To run Blezz, simply call it with optional paths to your configuration file like this:
 
 ```
-./bin/blezz -c ./cfg/config -p ./cfg/content
+./bin/blezz -c ./cfg/config -p ./cfg/content -d Main
 ```
 
 ### Controls
-Until better configuration of controls, this is the default.
+Controls are, with the current exception of `ESC`, configurable through the config file, this is the defaults.
 
-|Key|Action|
-|--:|:-----|
-|ESC'|closes the menu.|
-|'-'|goes up a level.|
-|'A'-'Z'|select an element.|
+|    Key|Action            |
+|------:|:-----------------|
+|  `ESC`|closes the menu.  |
+|    `-`|goes up a level.  |
+|`A`-`Z`|select an element.|
 
 ### Exit
-Terminate Blezz by pressing the close button, by default ESC, or going a level up at the starting directory, by default with '-'.
+Terminate Blezz by pressing the close button or going a level up from the starting directory.
 
 ## Dependencies
-`argp` and `xcb` is the only libraries used to build this project.
+`argp` and `xcb` is the only dependencies for building this project.
 
 ## TODO
 See project page. Any help is gladly taken.

@@ -95,7 +95,7 @@ void importContent(char* path) {
 	startDir = root;
 }
 
-int startsWithString(char* check, char* string) {
+int startsWithString(const char* check, const char* string) {
     int cLen = strlen(check);
     int sLen = strlen(string);
     if (cLen >= sLen) {
@@ -103,6 +103,21 @@ int startsWithString(char* check, char* string) {
     } else {
         return 0;
     }
+}
+
+void assignConfigString(char** target, const char* source, const char* filter) {
+    int sizeSource = strlen(source);
+    int sizeFilter = strlen(filter);
+    int sizeNew = sizeSource-sizeFilter;
+
+    (*target) = (char*)malloc(sizeNew*sizeof(char));
+    memcpy((*target),source+sizeFilter,sizeNew);
+}
+
+void assignConfigChar(char* target, const char* source, const char* filter) {
+    int sizeFilter = strlen(filter);
+
+    *target = source[sizeFilter];
 }
 
 void importConfig(char* path) {
@@ -114,14 +129,32 @@ void importConfig(char* path) {
     lines = getLines(file);
     fclose(file);
 
+    //config variables we accept
+    const char* fontString = "font=";
+    const char* dirUpString = "directoryUpKey=";
+    const char* actionIndicatorString = "actionIndicator=";
+    const char* directoryIndicatorString = "directoryIndicator=";
+
     for (int i = 0; lines[i] != NULL; i++) {
-        if (startsWithString(lines[i],"font=")) {
-            int sizeSource = strlen("font=");
-            int sizeNew = strlen(lines[i])-sizeSource+1;
-            arguments.font=(char*)malloc(sizeNew*sizeof(char));
-            strncpy(arguments.font,lines[i]+sizeSource,sizeNew);
-            printf("\t%s got assigned %s\n","Font",arguments.font);
+        if (startsWithString(lines[i],fontString)) {
+            assignConfigString(&(arguments.font),lines[i],fontString);
+            printf("\tLoaded %.*s as: %s\n",(int)strlen(fontString)-1,fontString,arguments.font);
+        } 
+        else if (startsWithString(lines[i],dirUpString)) {
+            assignConfigChar(&(arguments.dirUpKey),lines[i],dirUpString);
+            printf("\tLoaded %.*s as: %c\n",(int)strlen(dirUpString)-1,dirUpString,arguments.dirUpKey);
+        
         }
+        else if (startsWithString(lines[i],actionIndicatorString)) {
+            assignConfigChar(&(arguments.actS),lines[i],actionIndicatorString);
+            printf("\tLoaded %.*s as: %c\n",(int)strlen(actionIndicatorString)-1,actionIndicatorString,arguments.actS);
+        
+        }
+        else if (startsWithString(lines[i],directoryIndicatorString)) {
+            assignConfigChar(&(arguments.dirS),lines[i],directoryIndicatorString);
+            printf("\tLoaded %.*s as: %c\n",(int)strlen(directoryIndicatorString)-1,directoryIndicatorString,arguments.dirS);
+        }
+
         free(lines[i]);
     }
     free(lines);

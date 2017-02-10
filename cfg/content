@@ -6,11 +6,16 @@ dir(s,System)
 
 Develop:
 act(b,Blezz dev,code ~/Git/blezz)
+act(s,SW8,code ~/Git/SW804F17)
 act(v,Gnome boxes,gnome-boxes)
 
 Options:
-act(b,Blezz structure,leafpad ~/Git/blezz/cfg/content)
+dir(b,Blezz Options)
 act(t,Tint2 config,leafpad ~/Git/dotfiles/tint2/tint2rc)
+
+Blezz Options:
+act(c,Blezz content,leafpad ~/Git/blezz/cfg/content)
+act(o,Blezz options,leafpad ~/Git/blezz/cfg/config)
 
 Applications:
 act(f,Firefox,firefox)

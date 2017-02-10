@@ -10,7 +10,6 @@ int savedDirs = 0;
 int savedActs = 0;
 Dir** allDirs = NULL;
 Act** allActs = NULL;
-
 int dirStackTop = -1;
 Dir** dirStack;
 
@@ -29,7 +28,7 @@ int isDirDecl(char* string){
 Dir* newDirFromRef(char* string, Dir* parent){
     int keyIndex = 4;
     int labelIndex = 6;
-    int labelLength = strlen(string)-(labelIndex+1);
+    int labelLength = strlen(string)-labelIndex-1;
     
     Dir* dir = (Dir*)malloc(sizeof(Dir));
     dir->key = string[keyIndex];
@@ -115,8 +114,7 @@ void dirStackPop() {
 }
 
 void dirStackPush(Dir* dir) {
-    dirStackTop++;
-    dirStack[dirStackTop] = dir;
+    dirStack[++dirStackTop] = dir;
 }
 
 Dir* dirStackPeek() {

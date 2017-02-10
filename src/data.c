@@ -123,7 +123,7 @@ Dir* dirStackPeek() {
 }
 
 int dirStackIsEmpty() {
-    return dirStackTop < 0;
+    return (dirStackTop < 0);
 }
 
 void dirStackAlloc() {
@@ -134,17 +134,42 @@ void dirStackAlloc() {
 char** allocForDirToStrings() {
     char** ret = (char**)malloc(sizeof(char*)*(savedActs+savedDirs+1));
     for (int i = 0; i < savedActs+savedDirs+1; i++) {
-        ret[i] = (char*)malloc(sizeof(char)*32);
+        ret[i] = (char*)malloc(sizeof(char)*128);
     }
     return ret;
 }
 
+void stringifyCurrentMenuSimple(char** reference) {
+	sprintf(*reference,"%s:",dirStackPeek()->label);
+}
+
+void stringifyCurrentMenuNested(char** reference) {
+    char* divider = ">";
+    int currentIndex = 0;
+
+	sprintf(*reference,"%s:",dirStack[0]->label);
+    currentIndex += strlen(dirStack[0]->label);
+    for(int i = 1; i <= dirStackTop; i++) {
+	    sprintf(*reference+currentIndex,"%s%s:",divider,dirStack[i]->label);
+        currentIndex = strlen(*reference)-1; //strlen(dirStack[0]->label)+strlen(divider);
+    }
+    (*reference)[currentIndex+1] = '\0';
+}
+
 //index parameter will tell how many lines are returned ASSUMING PRE ALLOCATED MEMORY
 char** dirToStrings(char** ret, int* count) {
-    Dir* dir = dirStackPeek();
     int index = 0;
 
-	sprintf(ret[index++],"%s:",dir->label);
+    if(arguments.showMenuNames) {
+        if(arguments.showMenuNamesNested) {
+            stringifyCurrentMenuNested(&(ret[index++]));
+        }
+        else {
+            stringifyCurrentMenuSimple(&(ret[index++]));
+        }
+    }
+
+    Dir* dir = dirStackPeek();
 
     for(int i = 0; i < savedDirs; i++) {
         if (allDirs[i]->parent == dir) {
@@ -159,7 +184,7 @@ char** dirToStrings(char** ret, int* count) {
     }  
 
     *count = index;
-    return ret; //purely for readability        
+    return ret; //purely for readability
 }
 
 //selection in a dir, changes state if it should, if not returning 0 program should terminate.
@@ -168,7 +193,12 @@ int selectElement(char choice) {
     //go dir up if dirUpKey
     if(choice == arguments.dirUpKey) {
         dirStackPop();
-        return dirStackIsEmpty()?ELEMENT_SELECTION_OVER:ELEMENT_SELECTION_TRUE; 
+        if (dirStackIsEmpty()) {
+            return ELEMENT_SELECTION_OVER;
+        }
+        else {
+            return ELEMENT_SELECTION_TRUE;
+        }
     }
     
     //go to dir if a match is found

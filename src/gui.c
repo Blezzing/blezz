@@ -22,10 +22,13 @@ char** linesToPrint = NULL;
 xcb_connection_t* connection = NULL;
 int screenNumber = 0;
 xcb_screen_t* screen = NULL;
-xcb_window_t window = 0;
+xcb_drawable_t window = 0;
 
-static xcb_gc_t getFontGC(xcb_connection_t* c, xcb_screen_t* screen, xcb_window_t winndow, const char* font_name);
-static void drawText(xcb_connection_t *c, xcb_screen_t *screen, xcb_window_t window, int16_t x1, int16_t y1, const char* label);
+int foregroundColor = 0xffffff;
+int backgroundColor = 0x000000;
+
+xcb_gc_t fontGC;
+xcb_gc_t fillGC;
 
 static void testCookie(xcb_void_cookie_t cookie, xcb_connection_t *connection, char *errMessage ) {
     xcb_generic_error_t *error = xcb_request_check (connection, cookie);
@@ -62,41 +65,35 @@ void releaseKeyboard() {
     xcb_ungrab_keyboard ( connection, XCB_CURRENT_TIME );
 }
 
-static void drawText(xcb_connection_t  *connection,
-                     xcb_screen_t      *screen,
-                     xcb_window_t       window,
-                     int16_t            x1,
-                     int16_t            y1,
-                     const char        *label ) {
-    xcb_gcontext_t gc = getFontGC(connection,screen,window,arguments.font);
-    xcb_void_cookie_t textCookie = xcb_image_text_8_checked(connection,strlen(label),window,gc,x1,y1,label);
-    testCookie(textCookie,connection,"can't paste text");
-    xcb_void_cookie_t gcCookie = xcb_free_gc(connection,gc);
-    testCookie(gcCookie,connection,"can't free gc");
-}
-
-static xcb_gc_t getFontGC (xcb_connection_t  *connection,
-                           xcb_screen_t      *screen,
-                           xcb_window_t       window,
-                           const char        *font_name ) {
+void fontGCInit(const char *font_name) {
     //get font
     xcb_font_t font = xcb_generate_id (connection);
     xcb_void_cookie_t fontCookie = xcb_open_font_checked(connection,font,strlen(font_name),font_name);
     testCookie(fontCookie,connection,"can't open font");
 
     //get graphics content
-    xcb_gcontext_t gc = xcb_generate_id (connection);
+    fontGC = xcb_generate_id (connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_FONT;
-    uint32_t value_list[3] = { screen->white_pixel, screen->black_pixel, font };
-    xcb_void_cookie_t gcCookie = xcb_create_gc_checked(connection, gc, window, mask, value_list);
+    uint32_t value_list[3] = { foregroundColor, backgroundColor, font };
+    xcb_void_cookie_t gcCookie = xcb_create_gc_checked(connection, fontGC, window, mask, value_list);
     testCookie(gcCookie, connection, "can't create gc");
 
     //close font
     fontCookie = xcb_close_font_checked(connection, font);
     testCookie(fontCookie, connection, "can't close font");
+}
 
-    //finish
-    return gc;
+void drawText(xcb_connection_t  *connection,
+                     xcb_screen_t      *screen,
+                     xcb_window_t       window,
+                     int16_t            x1,
+                     int16_t            y1,
+                     const char        *label ) {
+    fontGCInit(arguments.font);
+    xcb_void_cookie_t textCookie = xcb_image_text_8_checked(connection,strlen(label),window,fontGC,x1,y1,label);
+    testCookie(textCookie,connection,"can't paste text");
+    xcb_void_cookie_t gcCookie = xcb_free_gc(connection,fontGC);
+    testCookie(gcCookie,connection,"can't free gc");
 }
 
 void updateWindowLocation() {
@@ -121,6 +118,7 @@ void updateWindowFlags() {
     xcb_intern_atom_cookie_t cookie2 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE_DOCK"), "_NET_WM_WINDOW_TYPE_DOCK");
     xcb_intern_atom_reply_t* reply2 = xcb_intern_atom_reply(connection, cookie2, 0);
     xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, reply->atom, XCB_ATOM_ATOM, 32, 1, &(reply2->atom));
+    //xcb_aux_sync(connection); //this is a to maybe get rid of the random borders...
 }
 
 void connectionInit() {
@@ -128,19 +126,23 @@ void connectionInit() {
 }
 
 void screenInit() {
-    const xcb_setup_t* setup = xcb_get_setup(connection);
-    xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
-    for(int i = 0; i < screenNumber; ++i) {
-        xcb_screen_next(&iter);
-    }
-    screen = iter.data;
+    screen = xcb_setup_roots_iterator(xcb_get_setup(connection)).data;
+}
+
+void fillGCInit() {
+    fillGC = xcb_generate_id(connection);
+    uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_GRAPHICS_EXPOSURES;
+    uint32_t values[3] = {backgroundColor,backgroundColor,0};
+    xcb_create_gc(connection,fillGC,window,mask,values);
 }
 
 void windowInit() {
+    uint32_t values[3];
+    uint32_t mask = 0;
+
     window = xcb_generate_id(connection);
-    uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
-    uint32_t values[2];
-    values[0] = screen->black_pixel;
+    mask = XCB_CW_BACK_PIXEL| XCB_CW_EVENT_MASK;
+    values[0] = backgroundColor;
     values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_EXPOSURE;
     xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,windowX,windowY,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
@@ -152,22 +154,13 @@ void mapWindow() {
 }
 
 void updateWindowSize() {
-    uint32_t values[] = { (numberOfLinesToPrint * 20 + 16) };
-    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_HEIGHT, values);
+    windowHeight = (numberOfLinesToPrint * 20 + 16);
+    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_HEIGHT, &windowHeight);
 }
 
 void clearWindow(){
-    xcb_rectangle_t rect = {0, 0, windowHeight, windowWidth};
-
-    uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
-    uint32_t values[2];
-    values[0] = screen->black_pixel;
-    values[1] = 0;
-
-    xcb_gcontext_t gc = xcb_generate_id (connection);
-    xcb_create_gc (connection, gc, window, mask, values);
-
-    xcb_poly_fill_rectangle(connection, window, gc, 1, &rect);
+    xcb_rectangle_t rect = {0, 0, windowWidth, windowHeight};
+    xcb_poly_fill_rectangle(connection, window, fillGC, 1, &rect);
 }
 
 void drawAllText() {
@@ -175,7 +168,7 @@ void drawAllText() {
     clearWindow();
 
     for (int i = 0; i < numberOfLinesToPrint; i++) {
-        drawText (connection,screen,window,18,20*(i+1), linesToPrint[i]);
+        drawText(connection,screen,window,18,20*(i+1), linesToPrint[i]);
     }
 }
 
@@ -272,11 +265,16 @@ void guiStart() {
     connectionInit();
     screenInit();
     windowInit();
+    fontGCInit(arguments.font);
+    fillGCInit();
+    xcb_flush(connection);
+
+    clearWindow();
     mapWindow();
     xcb_flush(connection);
 
     updateWindowFlags();
-    updateWindowLocation();    
+    updateWindowLocation();
     xcb_flush(connection);
 
     updateData();

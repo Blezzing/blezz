@@ -83,6 +83,8 @@ void argumentsInit() {
     arguments.startDir = "Main";
     arguments.windowWidth = 600;
     arguments.keyAsUpper = 0;
+    arguments.showMenuNames = 0;
+    arguments.showMenuNamesNested = 0;
 }
 
 void argumentsApply(int argc, char** argv) {

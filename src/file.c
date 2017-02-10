@@ -150,6 +150,8 @@ void importConfig(char* path) {
     const char* startDirectoryString = "startDirectory=";
     const char* windowWidthString = "windowWidth=";
     const char* showKeyAsUpperString = "showKeyAsUpper=";
+    const char* showMenuNamesString = "showMenuNames=";
+    const char* showMenuNamesNestedString = "showMenuNamesNested=";
 
     for (int i = 0; lines[i] != NULL; i++) {
         if (startsWithString(lines[i],fontString)) {
@@ -173,15 +175,23 @@ void importConfig(char* path) {
         else if (startsWithString(lines[i],startDirectoryString)) {
             assignConfigString(&(arguments.startDir),lines[i],startDirectoryString);
             printf("\tLoaded %.*s as: %s\n",(int)strlen(startDirectoryString)-1,startDirectoryString,arguments.startDir);
-        } 
+        }
         else if (startsWithString(lines[i],windowWidthString)) {
             assignConfigInt(&(arguments.windowWidth),lines[i],windowWidthString);
             printf("\tLoaded %.*s as: %i\n",(int)strlen(windowWidthString)-1,windowWidthString,arguments.windowWidth);
-        } 
+        }
         else if (startsWithString(lines[i],showKeyAsUpperString)) {
             assignConfigBool(&(arguments.keyAsUpper),lines[i],showKeyAsUpperString);
             printf("\tLoaded %.*s as: %i\n",(int)strlen(showKeyAsUpperString)-1,showKeyAsUpperString,arguments.keyAsUpper);
-        } 
+        }
+        else if (startsWithString(lines[i],showMenuNamesString)) {
+            assignConfigBool(&(arguments.showMenuNames),lines[i],showMenuNamesString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(showMenuNamesString)-1,showMenuNamesString,arguments.showMenuNames);
+        }
+        else if (startsWithString(lines[i],showMenuNamesNestedString)) {
+            assignConfigBool(&(arguments.showMenuNamesNested),lines[i],showMenuNamesNestedString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(showMenuNamesNestedString)-1,showMenuNamesNestedString,arguments.showMenuNamesNested);
+        }
 
         free(lines[i]);
     }

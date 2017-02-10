@@ -11,8 +11,8 @@
 #include"argpass.h"
 #include"errors.h"
 
-int windowHeight = 260;
-int windowWidth = 600;
+int windowHeight = 1;
+int windowWidth = 0;
 int windowX = 0;
 int windowY = 0;
 
@@ -151,20 +151,6 @@ void mapWindow() {
     testCookie(mapCookie,connection,"can't map window");
 }
 
-void guiStart() {
-    connectionInit();
-    screenInit();
-    windowInit();
-    mapWindow();
-    xcb_flush(connection);
-
-    updateWindowFlags();
-    updateWindowLocation();    
-    xcb_flush(connection);
-
-    updateData();
-}
-
 void updateWindowSize() {
     uint32_t values[] = { (numberOfLinesToPrint * 20 + 16) };
     xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_HEIGHT, values);
@@ -279,6 +265,21 @@ int handleEvent(xcb_generic_event_t* event) {
     free(event);
 
     return shouldFinishAfter;
+}
+
+void guiStart() {
+    windowWidth = arguments.windowWidth;
+    connectionInit();
+    screenInit();
+    windowInit();
+    mapWindow();
+    xcb_flush(connection);
+
+    updateWindowFlags();
+    updateWindowLocation();    
+    xcb_flush(connection);
+
+    updateData();
 }
 
 void guiEnd() {

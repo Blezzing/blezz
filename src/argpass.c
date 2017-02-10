@@ -1,4 +1,5 @@
 #include<argp.h>
+#include<stdlib.h>
 
 #include"argpass.h"
 
@@ -16,6 +17,7 @@ static struct argp_option options[] = {
     {"config",  'c',    "FILE",      0, "Loads arguments from another file" },
     {"font",    'f',    "fontName",  0, "Font to use in presentation" },
     {"startDir",'d',    "label",     0, "Name of the directory that should be started in"},
+    {"width",   'w',    "width",     0, "Width of the window in pixels"},
     {"actS",    -3,     "CHARACTER", 0, "Symbol to prepend actions" },
     {"dirS",    -2,     "CHARACTER", 0, "Symbol to prepend directories" },
     {"dirUpKey",-1,     "CHARACTER", 0, "Character used for going a directory up" },
@@ -43,6 +45,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
             break;
         case 'd': //font
             arguments->startDir = arg;
+            break;
+        case 'w': //width
+            arguments->windowWidth = (int)strtol(arg,NULL,10);
             break;
         case -1: //dirUpKey;
             arguments->dirUpKey = arg[0];
@@ -76,6 +81,7 @@ void argumentsInit() {
     arguments.contentFile = "/home/blezzing/Git/blezz/cfg/content";
     arguments.font = "fixed";
     arguments.startDir = "Main";
+    arguments.windowWidth = 600;
 }
 
 void argumentsApply(int argc, char** argv) {

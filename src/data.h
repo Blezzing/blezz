@@ -49,6 +49,6 @@ int  dirStackIsEmpty();
 
 char** allocForDirToStrings();
 char** dirToStrings(char** ret, int* count);
-int selectElement(char choice);
+int    selectElement(char choice);
 
 #endif

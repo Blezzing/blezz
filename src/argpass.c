@@ -14,7 +14,8 @@ static struct argp_option options[] = {
     {"silent",  's',    0,           OPTION_ALIAS },
     {"content", 'p',    "FILE",      0, "Loads directives and actions from another file" },
     {"config",  'c',    "FILE",      0, "Loads arguments from another file" },
-    {"font",    'f',    "font",      0, "Font to use in presentation" },
+    {"font",    'f',    "fontName",  0, "Font to use in presentation" },
+    {"startDir",'d',    "label",     0, "Name of the directory that should be started in"},
     {"actS",    -3,     "CHARACTER", 0, "Symbol to prepend actions" },
     {"dirS",    -2,     "CHARACTER", 0, "Symbol to prepend directories" },
     {"dirUpKey",-1,     "CHARACTER", 0, "Character used for going a directory up" },
@@ -39,6 +40,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
             break;
         case 'f': //font
             arguments->font = arg;
+            break;
+        case 'd': //font
+            arguments->startDir = arg;
             break;
         case -1: //dirUpKey;
             arguments->dirUpKey = arg[0];
@@ -71,6 +75,7 @@ void argumentsInit() {
     arguments.configFile = "/home/blezzing/Git/blezz/cfg/config";
     arguments.contentFile = "/home/blezzing/Git/blezz/cfg/content";
     arguments.font = "fixed";
+    arguments.startDir = "Main";
 }
 
 void argumentsApply(int argc, char** argv) {

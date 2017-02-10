@@ -110,8 +110,9 @@ void assignConfigString(char** target, const char* source, const char* filter) {
     int sizeFilter = strlen(filter);
     int sizeNew = sizeSource-sizeFilter;
 
-    (*target) = (char*)malloc(sizeNew*sizeof(char));
-    memcpy((*target),source+sizeFilter,sizeNew);
+    *target = (char*)malloc(sizeNew*sizeof(char));
+    memcpy(*target,source+sizeFilter,sizeNew);
+    (*target)[sizeNew] = '\0';
 }
 
 void assignConfigChar(char* target, const char* source, const char* filter) {
@@ -134,6 +135,7 @@ void importConfig(char* path) {
     const char* dirUpString = "directoryUpKey=";
     const char* actionIndicatorString = "actionIndicator=";
     const char* directoryIndicatorString = "directoryIndicator=";
+    const char* startDirectoryString = "startDirectory=";
 
     for (int i = 0; lines[i] != NULL; i++) {
         if (startsWithString(lines[i],fontString)) {
@@ -154,6 +156,10 @@ void importConfig(char* path) {
             assignConfigChar(&(arguments.dirS),lines[i],directoryIndicatorString);
             printf("\tLoaded %.*s as: %c\n",(int)strlen(directoryIndicatorString)-1,directoryIndicatorString,arguments.dirS);
         }
+        else if (startsWithString(lines[i],startDirectoryString)) {
+            assignConfigString(&(arguments.startDir),lines[i],startDirectoryString);
+            printf("\tLoaded %.*s as: %s\n",(int)strlen(startDirectoryString)-1,startDirectoryString,arguments.startDir);
+        } 
 
         free(lines[i]);
     }

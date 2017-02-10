@@ -189,7 +189,25 @@ int selectElement(char choice) {
     return 0;
 }
 
+Dir* findDirFromLabel(char* label) {    
+    for(int i = 0; i < savedDirs; i++) {
+        if(strcmp(allDirs[i]->label,label) == 0){
+            return allDirs[i];
+        }
+    }
+
+    return NULL;
+}
+
+void updateStartDir() {
+    Dir* dir;
+    if((dir = findDirFromLabel(arguments.startDir))) {
+        startDir = dir;
+    }
+}
+
 void dirStackInit() {
     dirStackAlloc();
+    updateStartDir();
     dirStackPush(startDir);
 }

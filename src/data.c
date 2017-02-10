@@ -167,14 +167,14 @@ int selectElement(char choice) {
     //go dir up if dirUpKey
     if(choice == arguments.dirUpKey) {
         dirStackPop();
-        return dirStackIsEmpty();
+        return dirStackIsEmpty()?ELEMENT_SELECTION_OVER:ELEMENT_SELECTION_TRUE; 
     }
     
     //go to dir if a match is found
     for(int i = 0; i < savedDirs; i++) {
         if(allDirs[i]->parent == dir && allDirs[i]->key == choice){
             dirStackPush(allDirs[i]);
-            return 0;
+            return ELEMENT_SELECTION_TRUE;
         }
     }
     
@@ -182,11 +182,11 @@ int selectElement(char choice) {
     for(int i = 0; i < savedActs; i++) {
         if (allActs[i]->parent == dir && allActs[i]->key == choice){
             system(allActs[i]->command);
-            return 1;
+            return ELEMENT_SELECTION_OVER;
         }
     }
     
-    return 0;
+    return ELEMENT_SELECTION_FALSE;
 }
 
 Dir* findDirFromLabel(char* label) {    

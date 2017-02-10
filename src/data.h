@@ -1,6 +1,12 @@
 #ifndef DATAHEADER_H
 #define DATAHEADER_H
 
+//Defines for return variable checking
+#define ELEMENT_SELECTION_FALSE 0
+#define ELEMENT_SELECTION_TRUE 1
+#define ELEMENT_SELECTION_OVER 2
+
+
 //Structures
 typedef struct Dir Dir;
 typedef struct Act Act;

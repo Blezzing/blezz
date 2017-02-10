@@ -116,7 +116,7 @@ void updateData() {
 }
 
 void updateWindowFlags() {
-    //This code is based on conversation from https://lists.freedesktop.org/archives/xcb/2010-December/006718.html it is not pretty, but it works.
+    //This code is based on conversation from https://lists.freedesktop.org/archives/xcb/2010-December/006718.html it is not pretty, but it works. Most of the time..
     xcb_intern_atom_cookie_t cookie1 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE"),"_NET_WM_WINDOW_TYPE");
     xcb_intern_atom_reply_t* reply = xcb_intern_atom_reply(connection, cookie1, 0);
     xcb_intern_atom_cookie_t cookie2 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE_DOCK"), "_NET_WM_WINDOW_TYPE_DOCK");
@@ -262,8 +262,13 @@ int handleEvent(xcb_generic_event_t* event) {
 
             char character = getCharfromKeycode(keycode);
             int exitSelection = selectElement(character);
-            if (exitSelection) {
+            
+            if (exitSelection == ELEMENT_SELECTION_OVER) {
                 shouldFinishAfter = 1; 
+                break;
+            }
+            
+            if (exitSelection == ELEMENT_SELECTION_FALSE) {
                 break;
             }
             

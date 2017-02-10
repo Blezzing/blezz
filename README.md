@@ -54,15 +54,17 @@ name=value
 ```
 The options for this file is: (This is being heavily expanded currently)
 
-|              Name|Value                                                                   |Default|
-|-----------------:|:-----------------------------------------------------------------------|:------|
-|              font|name of an x font (find by using `xlsfonts`)                            |`fixed`|
-|    directoryUpKey|character that on keypress will go a level up                           |`-`    |
-|   actionIndicator|character shown before actions to indicate that they are actions        |`!`    |
-|directoryIndicator|character shown before directories to indicate that they are directories|`>`    |
-|    startDirectory|name of the start directory                                             |`Main` |
-|       windowWidth|width in pixels                                                         |`600`  |
-|    showKeyAsUpper|1 or 0 as true or false                                                 |`0`    |
+|               Name|Value                                                                   |Default|
+|------------------:|:-----------------------------------------------------------------------|:------|
+|               font|name of an x font (find by using `xlsfonts`)                            |`fixed`|
+|     directoryUpKey|character that on keypress will go a level up                           |`-`    |
+|    actionIndicator|character shown before actions to indicate that they are actions        |`!`    |
+| directoryIndicator|character shown before directories to indicate that they are directories|`>`    |
+|     startDirectory|name of the start directory                                             |`Main` |
+|        windowWidth|width in pixels                                                         |`600`  |
+|     showKeyAsUpper|1 or 0 as true or false                                                 |`0`    |
+|      showMenuNames|1 or 0 as true or false                                                 |`0`    |
+|showMenuNamesNested|1 or 0 as true or false                                                 |`0`    |
 
 (An example can be found in `cfg/config`)
 

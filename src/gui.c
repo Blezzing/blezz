@@ -65,18 +65,17 @@ void releaseKeyboard() {
     xcb_ungrab_keyboard ( connection, XCB_CURRENT_TIME );
 }
 
-void fontGCInit(const char *font_name) {
+void fontGCInit() {
     //get font
     xcb_font_t font = xcb_generate_id (connection);
-    xcb_void_cookie_t fontCookie = xcb_open_font_checked(connection,font,strlen(font_name),font_name);
+    xcb_void_cookie_t fontCookie = xcb_open_font_checked(connection,font,strlen(arguments.font),arguments.font);
     testCookie(fontCookie,connection,"can't open font");
 
     //get graphics content
     fontGC = xcb_generate_id (connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_FONT;
     uint32_t value_list[3] = { foregroundColor, backgroundColor, font };
-    xcb_void_cookie_t gcCookie = xcb_create_gc_checked(connection, fontGC, window, mask, value_list);
-    testCookie(gcCookie, connection, "can't create gc");
+    xcb_create_gc(connection, fontGC, window, mask, value_list);
 
     //close font
     fontCookie = xcb_close_font_checked(connection, font);
@@ -163,7 +162,7 @@ void drawAllText() {
     clearWindow();
 
     for (int i = 0; i < numberOfLinesToPrint; i++) {
-        drawText(connection,screen,window,18,20*(i+1), linesToPrint[i]);
+        drawText(18,20*(i+1), linesToPrint[i]);
     }
 }
 
@@ -260,7 +259,7 @@ void guiStart() {
     connectionInit();
     screenInit();
     windowInit();
-    fontGCInit(arguments.font);
+    fontGCInit();
     fillGCInit();
     xcb_flush(connection);
 

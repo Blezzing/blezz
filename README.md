@@ -15,6 +15,9 @@ make
 sudo make install
 ```
 
+### Dependencies
+`argp` and `xcb` and their headers are needed for building this project.
+
 ## Uninstall
 If copied to the bin directory, make uninstall removes it, effectively uninstalling
 
@@ -83,9 +86,6 @@ Controls are, with the current exception of `ESC`, configurable through the conf
 
 ### Exit
 Terminate Blezz by pressing the close button or going a level up from the starting directory.
-
-## Dependencies
-`argp` and `xcb` is the only dependencies for building this project.
 
 ## TODO
 See project page. Any help is gladly taken.

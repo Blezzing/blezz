@@ -62,6 +62,7 @@ The options for this file is: (This is being heavily expanded currently)
 |directoryIndicator|character shown before directories to indicate that they are directories|`>`    |
 |    startDirectory|name of the start directory                                             |`Main` |
 |       windowWidth|width in pixels                                                         |`600`  |
+|    showKeyAsUpper|1 or 0 as true or false                                                 |`0`    |
 
 (An example can be found in `cfg/config`)
 

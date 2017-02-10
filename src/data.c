@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdio.h>
+#include<ctype.h>
 
 #include"file.h"
 #include"data.h"
@@ -31,7 +32,7 @@ Dir* newDirFromRef(char* string, Dir* parent){
     int labelLength = strlen(string)-labelIndex-1;
     
     Dir* dir = (Dir*)malloc(sizeof(Dir));
-    dir->key = string[keyIndex];
+    dir->key = tolower(string[keyIndex]);
     dir->label = (char*)malloc(sizeof(char)*(labelLength+1));
     strncpy(dir->label,string+labelIndex,labelLength);
     dir->label[labelLength]='\0';
@@ -64,7 +65,7 @@ Act* newActFromRef(char* string, Dir* parent){
     int disownStringLength = 8;
 
     Act* act = (Act*)malloc(sizeof(Act));
-    act->key = string[keyIndex];
+    act->key = tolower(string[keyIndex]);
     act->label = (char*)malloc(sizeof(char)*(labelLength+1));
     strncpy(act->label,string+labelIndex,labelLength);
     act->label[labelLength] = '\0';
@@ -138,7 +139,7 @@ char** allocForDirToStrings() {
     return ret;
 }
 
-//index parameter will tell how many lines are returned ASSUMING PRALLOCATED MEMORY
+//index parameter will tell how many lines are returned ASSUMING PRE ALLOCATED MEMORY
 char** dirToStrings(char** ret, int* count) {
     Dir* dir = dirStackPeek();
     int index = 0;
@@ -147,7 +148,7 @@ char** dirToStrings(char** ret, int* count) {
 
     for(int i = 0; i < savedDirs; i++) {
         if (allDirs[i]->parent == dir) {
-            sprintf(ret[index++],"%c [%c] %s",arguments.dirS, allDirs[i]->key, allDirs[i]->label);
+            sprintf(ret[index++],"%c [%c] %s",arguments.dirS, (arguments.keyAsUpper?toupper(allDirs[i]->key):allDirs[i]->key), allDirs[i]->label);
         }
     }
     

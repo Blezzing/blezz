@@ -8,7 +8,7 @@ EXECUTABLE=./bin/blezz
 INSTALLDIR=/bin/
 
 all: $(SOURCES) $(EXECUTABLE)
-    
+
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS)  -o $@
 
@@ -16,7 +16,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< $(LIBS) -o $@
 
 clean:
-	rm ./src/*.o
+	rm -f ./src/*.o
 
 run:
 	$(EXECUTABLE)
@@ -26,3 +26,5 @@ install:
 
 uninstall:
 	rm $(INSTALLDIR)blezz
+
+re: clean all

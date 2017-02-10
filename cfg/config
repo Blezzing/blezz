@@ -4,3 +4,4 @@ actionIndicator=~
 directoryIndicator=/
 startDirectory=Main
 windowWidth=1920
+showKeyAsUpper=1

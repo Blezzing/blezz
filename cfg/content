@@ -1,5 +1,5 @@
 Main:
-dir(d,Develop)
+dir(D,Develop)
 dir(o,Options)
 dir(a,Applications)
 dir(s,System)

@@ -82,6 +82,7 @@ void argumentsInit() {
     arguments.font = "fixed";
     arguments.startDir = "Main";
     arguments.windowWidth = 600;
+    arguments.keyAsUpper = 0;
 }
 
 void argumentsApply(int argc, char** argv) {

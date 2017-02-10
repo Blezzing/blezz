@@ -127,6 +127,12 @@ void assignConfigInt(int* target, const char* source, const char* filter) {
     *target = (int)strtol(source+sizeFilter,NULL,10);
 }
 
+void assignConfigBool(int* target, const char* source, const char* filter) {
+    int sizeFilter = strlen(filter);
+
+    *target = ((int)strtol(source+sizeFilter,NULL,10))?1:0;
+}
+
 void importConfig(char* path) {
     FILE* file;
     char** lines;
@@ -143,6 +149,7 @@ void importConfig(char* path) {
     const char* directoryIndicatorString = "directoryIndicator=";
     const char* startDirectoryString = "startDirectory=";
     const char* windowWidthString = "windowWidth=";
+    const char* showKeyAsUpperString = "showKeyAsUpper=";
 
     for (int i = 0; lines[i] != NULL; i++) {
         if (startsWithString(lines[i],fontString)) {
@@ -170,6 +177,10 @@ void importConfig(char* path) {
         else if (startsWithString(lines[i],windowWidthString)) {
             assignConfigInt(&(arguments.windowWidth),lines[i],windowWidthString);
             printf("\tLoaded %.*s as: %i\n",(int)strlen(windowWidthString)-1,windowWidthString,arguments.windowWidth);
+        } 
+        else if (startsWithString(lines[i],showKeyAsUpperString)) {
+            assignConfigBool(&(arguments.keyAsUpper),lines[i],showKeyAsUpperString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(showKeyAsUpperString)-1,showKeyAsUpperString,arguments.keyAsUpper);
         } 
 
         free(lines[i]);

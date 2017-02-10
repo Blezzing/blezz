@@ -83,12 +83,7 @@ void fontGCInit(const char *font_name) {
     testCookie(fontCookie, connection, "can't close font");
 }
 
-void drawText(xcb_connection_t  *connection,
-                     xcb_screen_t      *screen,
-                     xcb_window_t       window,
-                     int16_t            x1,
-                     int16_t            y1,
-                     const char        *label ) {
+void drawText(int16_t  x1, int16_t y1, const char *label ) {
     fontGCInit(arguments.font);
     xcb_void_cookie_t textCookie = xcb_image_text_8_checked(connection,strlen(label),window,fontGC,x1,y1,label);
     testCookie(textCookie,connection,"can't paste text");

@@ -67,6 +67,9 @@ The options for this file is: (This is being heavily expanded currently)
 |showMenuNamesNested|1 or 0 as true or false                                                 |`0`     |
 |    backgroundColor|RGB as hexadecimals, eg: `ff122a`                                       |`ffffff`|
 |    foregroundColor|RGB as hexadecimals, eg: `ff122a`                                       |`000000`|
+|     topIndentation|numbers of pixels between the top border and the text                   |5       |
+|    leftIndentation|numbers of pixels between the left border and the text                  |5       |
+|  bottomIndentation|numbers of pixels between the bottom border and the text                |5       |
 
 (An example can be found in `cfg/config`)
 

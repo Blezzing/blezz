@@ -20,6 +20,25 @@ sudo make install
 ### Dependencies
 `argp` and `xcb` and their headers are needed for building this project.
 
+These packages can normally be found in your distros repos, but their name varies, below i list the packages, that should contain the needed libraries, for some distros. 
+
+If any mistakes are found, please let me know in the issues.
+
+#### On Ubuntu
+```
+apt install libxcb1-dev libxcb-icccm4-dev libxcb-ewmh-dev
+```
+
+#### On Fedora
+```
+dnf install libxcb-devel xcb-util-devel xcb-util-wm-devel
+```
+
+#### On Arch
+```
+pacman -S libxcb xcb-util xcb-util-wm
+```
+
 ## Uninstall
 If copied to the `/usr/bin` directory, make uninstall removes it, effectively uninstalling it.
 
@@ -107,4 +126,4 @@ Controls are, with the current exception of `ESC`, configurable through the conf
 Terminate Blezz by pressing the close button or going a level up from the starting directory.
 
 ## TODO
-See project page. Any help is gladly taken.
+You are more than welcome to open issues, or contribute on any of the currently opened ones.

@@ -4,7 +4,7 @@ LDFLAGS=
 SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c ./src/gui.c ./src/argpass.c ./src/keys.c
 LIBS=-lxcb
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=./bin/blezz
+EXECUTABLE=./blezz
 INSTALLDIR=/usr/bin/
 
 all: $(SOURCES) $(EXECUTABLE)

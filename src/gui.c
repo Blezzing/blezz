@@ -160,7 +160,8 @@ void mapWindow() {
 
 void updateWindowSize() {
     windowHeight = (numberOfLinesToPrint * 20) + arguments.topIndent + arguments.botIndent;
-    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_HEIGHT, &windowHeight);
+    xcb_configure_window(connection, window, XCB_CONFIG_WINDOW_HEIGHT, &windowHeight);
+
 }
 
 void clearWindow(){

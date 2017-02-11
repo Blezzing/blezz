@@ -18,6 +18,7 @@ act(o,Blezz Options,leafpad ~/Git/blezz/cfg/config)
 
 Applications:
 act(f,Firefox,firefox)
+act(c,Chrome,google-chrome)
 act(t,Terminal,konsole)
 act(s,Spectacle,spectacle)
 

@@ -1,5 +1,7 @@
 # Blezz - Guided Keystroke Launcher
 
+![illustration](blezzPreview.png)
+
 ## Idea
 Complicated shortcuts are hard to remember and hard on the fingers, yet it is still nice to have shortcuts to scripts and used actions readily available.
 

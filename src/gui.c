@@ -112,12 +112,15 @@ void updateData() {
     dirToStrings(linesToPrint,&numberOfLinesToPrint);
 }
 
-void updateWindowFlags() {
+void setWindowFlags() {
     xcb_intern_atom_cookie_t cookie1 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE"),"_NET_WM_WINDOW_TYPE");
     xcb_intern_atom_cookie_t cookie2 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE_DOCK"), "_NET_WM_WINDOW_TYPE_DOCK");
     xcb_intern_atom_reply_t* reply1 = xcb_intern_atom_reply(connection, cookie1, 0);
     xcb_intern_atom_reply_t* reply2 = xcb_intern_atom_reply(connection, cookie2, 0);
-    xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, reply1->atom, XCB_ATOM_ATOM, 32, 1, &(reply2->atom));
+    xcb_void_cookie_t cc1 = xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, reply1->atom, XCB_ATOM_ATOM, 32, 1, &(reply2->atom));
+    xcb_void_cookie_t cc2 = xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, XCB_ATOM_WM_CLASS, XCB_ATOM_STRING, 8, 12, "blezz\0Blezz\0");
+    testCookie(cc1, connection, "failed setting _NET_WM_WINDOW_TYPE");
+    testCookie(cc2, connection, "failed setting WM_CLASS");
 }
 
 void connectionInit() {
@@ -220,10 +223,11 @@ void guiStart() {
     fontGCInit();
     fillGCInit();
 
+    setWindowFlags();
+
     clearWindow();
     mapWindow();
 
-    updateWindowFlags();
     updateWindowLocation();
 
     xcb_flush(connection);

@@ -5,21 +5,22 @@ dir(a,Applications)
 dir(s,System)
 
 Develop:
-act(b,Blezz dev,code ~/Git/blezz)
+act(b,Blezz Dev,code ~/Git/blezz)
 act(s,SW8,code ~/Git/SW804F17)
 
 Options:
 dir(b,Blezz Options)
-act(t,Tint2 config,leafpad ~/Git/dotfiles/tint2/tint2rc)
+act(t,Tint2 Config,leafpad ~/Git/dotfiles/tint2/tint2rc)
 
 Blezz Options:
-act(c,Blezz content,leafpad ~/Git/blezz/cfg/content)
-act(o,Blezz options,leafpad ~/Git/blezz/cfg/config)
+act(c,Blezz Content,leafpad ~/Git/blezz/cfg/content)
+act(o,Blezz Options,leafpad ~/Git/blezz/cfg/config)
 
 Applications:
 act(f,Firefox,firefox)
 act(t,Terminal,konsole)
 act(s,Spectacle,spectacle)
+act(s,Peek,peek)
 
 System:
 act(s,Shutdown,shutdown now)

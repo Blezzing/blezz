@@ -5,7 +5,7 @@ SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c ./src/gui.c ./src/
 LIBS=-lxcb
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=./bin/blezz
-INSTALLDIR=/bin/
+INSTALLDIR=/usr/bin/
 
 all: $(SOURCES) $(EXECUTABLE)
 

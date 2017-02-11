@@ -52,7 +52,7 @@ A very basic configuration file can be formed by a single type of statements.
 ```
 name=value
 ```
-The options for this file is: (This is being heavily expanded currently)
+The options for this file is:
 
 |               Name|Value                                                                      |Default |
 |------------------:|:--------------------------------------------------------------------------|:-------|
@@ -84,8 +84,13 @@ How to start, control, and exit Blezz.
 To run Blezz, simply call it with optional paths to your configuration file like this:
 
 ```
-./bin/blezz -c ./cfg/config -p ./cfg/content -d Main
+./bin/blezz -c ./cfg/config -p ./cfg/content -d SuperStartDir
 ```
+
+The extra arguments can be avoided by:
+saving your config file as `$(HOME)/.config/blezz/config`.
+saving your content file as `$(HOME)/.config/blezz/content`.
+having your intended start directory named `Main`.
 
 ### Controls
 Controls are, with the current exception of `ESC`, configurable through the config file, this is the defaults.

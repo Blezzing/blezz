@@ -179,7 +179,7 @@ char** dirToStrings(char** ret, int* count) {
     
     for(int i = 0; i < savedActs; i++) {
         if (allActs[i]->parent == dir) {
-            sprintf(ret[index++],"%c [%c] %s",arguments.actS, allActs[i]->key, allActs[i]->label);
+            sprintf(ret[index++],"%c [%c] %s",arguments.actS, (arguments.keyAsUpper?toupper(allActs[i]->key):allActs[i]->key), allActs[i]->label);
         }
     }  
 

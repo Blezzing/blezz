@@ -87,6 +87,9 @@ void argumentsInit() {
     arguments.showMenuNamesNested = 0;
     arguments.fgColor = 0x000000;
     arguments.bgColor = 0xffffff;
+    arguments.topIndent = 5;
+    arguments.leftIndent = 20;
+    arguments.botIndent = 10;
 }
 
 void argumentsApply(int argc, char** argv) {

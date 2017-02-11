@@ -15,6 +15,7 @@ int windowHeight = 1;
 int windowWidth = 0;
 int windowX = 0;
 int windowY = 0;
+int lineHeight = 19;
 
 int numberOfLinesToPrint;
 char** linesToPrint = NULL;
@@ -145,7 +146,7 @@ void mapWindow() {
 }
 
 void updateWindowSize() {
-    windowHeight = (numberOfLinesToPrint * 20 + 16);
+    windowHeight = (numberOfLinesToPrint * 20) + arguments.topIndent + arguments.botIndent;
     xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_HEIGHT, &windowHeight);
 }
 
@@ -159,7 +160,7 @@ void drawAllText() {
     clearWindow();
 
     for (int i = 0; i < numberOfLinesToPrint; i++) {
-        drawText(18,20*(i+1), linesToPrint[i]);
+        drawText(arguments.leftIndent,lineHeight*(i+1)+arguments.topIndent, linesToPrint[i]);
     }
 }
 

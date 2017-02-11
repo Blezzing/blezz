@@ -59,7 +59,7 @@ void importContent(char* path) {
     Dir* root = NULL;
     
     printf("%s %s\n","Loading content from:",path); 
-    file = fopen(path,"r"); //TODO: add errorhandling here, missing folders give segfault
+    file = fopen(path,"r"); //add errorhandling here, missing folders give segfault
     lines = getLines(file);
     fclose(file);
     
@@ -161,6 +161,9 @@ void importConfig(char* path) {
     const char* showMenuNamesNestedString = "showMenuNamesNested=";
     const char* foregroundColorString = "foregroundColor=";
     const char* backgroundColorString = "backgroundColor=";
+    const char* topIndentString = "topIndentation=";
+    const char* leftIndentString = "leftIndentation=";
+    const char* bottomIndentString = "bottomIndentation=";
 
     for (int i = 0; lines[i] != NULL; i++) {
         if (startsWithString(lines[i],fontString)) {
@@ -208,6 +211,18 @@ void importConfig(char* path) {
         else if (startsWithString(lines[i],backgroundColorString)) {
             assignConfigHex(&(arguments.bgColor),lines[i],backgroundColorString);
             printf("\tLoaded %.*s as: 0x%6.x\n",(int)strlen(backgroundColorString)-1,backgroundColorString,arguments.bgColor);
+        }
+        else if (startsWithString(lines[i],topIndentString)) {
+            assignConfigInt(&(arguments.topIndent),lines[i],topIndentString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(topIndentString)-1,topIndentString,arguments.topIndent);
+        }
+        else if (startsWithString(lines[i],leftIndentString)) {
+            assignConfigInt(&(arguments.leftIndent),lines[i],leftIndentString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(leftIndentString)-1,leftIndentString,arguments.leftIndent);
+        }
+        else if (startsWithString(lines[i],bottomIndentString)) {
+            assignConfigInt(&(arguments.botIndent),lines[i],bottomIndentString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(bottomIndentString)-1,bottomIndentString,arguments.botIndent);
         }
 
         free(lines[i]);

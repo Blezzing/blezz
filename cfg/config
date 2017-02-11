@@ -9,3 +9,6 @@ showMenuNames=1
 showMenuNamesNested=1
 backgroundColor=313742
 foregroundColor=f5f6f7
+topIndentation=25
+leftIndentation=750
+bottomIndentation=30

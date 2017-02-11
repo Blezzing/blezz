@@ -4,7 +4,7 @@
 //structure for sharing informations about arguments
 struct arguments {
     char *args[2];
-    int silent, verbose, windowWidth, keyAsUpper, showMenuNames, showMenuNamesNested;
+    int silent, verbose, windowWidth, keyAsUpper, showMenuNames, showMenuNamesNested, fgColor, bgColor;
     char dirUpKey, actS, dirS;
     char *configFile, *contentFile, *font, *startDir;
 };

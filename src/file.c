@@ -48,6 +48,7 @@ char** getLines(FILE* file) {
         lines[i][j+1]='\0';
     }
     contentLines = i+1;
+    lines[contentLines] = NULL;
     
     return lines;   
 }
@@ -127,6 +128,12 @@ void assignConfigInt(int* target, const char* source, const char* filter) {
     *target = (int)strtol(source+sizeFilter,NULL,10);
 }
 
+void assignConfigHex(int* target, const char* source, const char* filter) {
+    int sizeFilter = strlen(filter);
+
+    *target = (int)strtol(source+sizeFilter,NULL,16);
+}
+
 void assignConfigBool(int* target, const char* source, const char* filter) {
     int sizeFilter = strlen(filter);
 
@@ -152,6 +159,8 @@ void importConfig(char* path) {
     const char* showKeyAsUpperString = "showKeyAsUpper=";
     const char* showMenuNamesString = "showMenuNames=";
     const char* showMenuNamesNestedString = "showMenuNamesNested=";
+    const char* foregroundColorString = "foregroundColor=";
+    const char* backgroundColorString = "backgroundColor=";
 
     for (int i = 0; lines[i] != NULL; i++) {
         if (startsWithString(lines[i],fontString)) {
@@ -191,6 +200,14 @@ void importConfig(char* path) {
         else if (startsWithString(lines[i],showMenuNamesNestedString)) {
             assignConfigBool(&(arguments.showMenuNamesNested),lines[i],showMenuNamesNestedString);
             printf("\tLoaded %.*s as: %i\n",(int)strlen(showMenuNamesNestedString)-1,showMenuNamesNestedString,arguments.showMenuNamesNested);
+        }
+        else if (startsWithString(lines[i],foregroundColorString)) {
+            assignConfigHex(&(arguments.fgColor),lines[i],foregroundColorString);
+            printf("\tLoaded %.*s as: 0x%6.x\n",(int)strlen(foregroundColorString)-1,foregroundColorString,arguments.fgColor);
+        }
+        else if (startsWithString(lines[i],backgroundColorString)) {
+            assignConfigHex(&(arguments.bgColor),lines[i],backgroundColorString);
+            printf("\tLoaded %.*s as: 0x%6.x\n",(int)strlen(backgroundColorString)-1,backgroundColorString,arguments.bgColor);
         }
 
         free(lines[i]);

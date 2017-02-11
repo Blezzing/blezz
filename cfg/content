@@ -7,7 +7,6 @@ dir(s,System)
 Develop:
 act(b,Blezz dev,code ~/Git/blezz)
 act(s,SW8,code ~/Git/SW804F17)
-act(v,Gnome boxes,gnome-boxes)
 
 Options:
 dir(b,Blezz Options)
@@ -25,3 +24,4 @@ act(s,Spectacle,spectacle)
 System:
 act(s,Shutdown,shutdown now)
 act(r,Reboot,reboot)
+ 

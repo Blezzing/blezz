@@ -24,9 +24,6 @@ int screenNumber = 0;
 xcb_screen_t* screen = NULL;
 xcb_drawable_t window = 0;
 
-int foregroundColor = 0xffffff;
-int backgroundColor = 0x000000;
-
 xcb_gc_t fontGC;
 xcb_gc_t fillGC;
 
@@ -74,7 +71,7 @@ void fontGCInit() {
     //get graphics content
     fontGC = xcb_generate_id (connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_FONT;
-    uint32_t value_list[3] = { foregroundColor, backgroundColor, font };
+    uint32_t value_list[3] = { arguments.fgColor, arguments.bgColor, font };
     xcb_create_gc(connection, fontGC, window, mask, value_list);
 
     //close font
@@ -126,7 +123,7 @@ void screenInit() {
 void fillGCInit() {
     fillGC = xcb_generate_id(connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_GRAPHICS_EXPOSURES;
-    uint32_t values[3] = {backgroundColor,backgroundColor,0};
+    uint32_t values[3] = {arguments.bgColor,arguments.bgColor,0};
     xcb_create_gc(connection,fillGC,window,mask,values);
 }
 
@@ -136,8 +133,8 @@ void windowInit() {
 
     window = xcb_generate_id(connection);
     mask = XCB_CW_BACK_PIXEL| XCB_CW_EVENT_MASK;
-    values[0] = backgroundColor;
-    values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_EXPOSURE;
+    values[0] = arguments.bgColor;
+    values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_EXPOSURE;
     xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,windowX,windowY,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
 }
@@ -248,6 +245,10 @@ int handleEvent(xcb_generic_event_t* event) {
             drawAllText();
             break;
         }
+        case XCB_BUTTON_PRESS: {
+            shouldFinishAfter = 1;
+            break;
+        }
     } 
     free(event);
 
@@ -261,14 +262,13 @@ void guiStart() {
     windowInit();
     fontGCInit();
     fillGCInit();
-    xcb_flush(connection);
 
     clearWindow();
     mapWindow();
-    xcb_flush(connection);
 
     updateWindowFlags();
     updateWindowLocation();
+
     xcb_flush(connection);
 
     updateData();

@@ -1,5 +1,7 @@
 #include<argp.h>
 #include<stdlib.h>
+#include<unistd.h>
+#include<pwd.h>
 
 #include"argpass.h"
 
@@ -68,6 +70,16 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
     return 0;
 }
 
+
+
+char* getHomePath() {
+    char* homedir;
+    if ((homedir = getenv("HOME")) == NULL) {
+        homedir = getpwuid(getuid())->pw_dir;
+    }
+    return homedir;
+}
+
 //parsing information
 static struct argp argp = { options, parse_opt, "", doc };
 
@@ -77,8 +89,10 @@ void argumentsInit() {
     arguments.actS = '!';
     arguments.dirS = '>';
     arguments.dirUpKey = '-';
-    arguments.configFile = "/home/blezzing/Git/blezz/cfg/config";
-    arguments.contentFile = "/home/blezzing/Git/blezz/cfg/content";
+    arguments.configFile = (char*)malloc(256*sizeof(char)); //Should be less... static..
+    sprintf(arguments.configFile,"%s/.config/blezz/config",getHomePath());
+    arguments.contentFile = (char*)malloc(256*sizeof(char)); //Should be less... static..
+    sprintf(arguments.contentFile,"%s/.config/blezz/content",getHomePath());
     arguments.font = "fixed";
     arguments.startDir = "Main";
     arguments.windowWidth = 600;

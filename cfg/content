@@ -20,7 +20,6 @@ Applications:
 act(f,Firefox,firefox)
 act(t,Terminal,konsole)
 act(s,Spectacle,spectacle)
-act(s,Peek,peek)
 
 System:
 act(s,Shutdown,shutdown now)

@@ -56,20 +56,20 @@ The options for this file is: (This is being heavily expanded currently)
 
 |               Name|Value                                                                   |Default |
 |------------------:|:-----------------------------------------------------------------------|:-------|
-|               font|name of an x font (find by using `xlsfonts`)                            |`fixed` |
-|     directoryUpKey|character that on keypress will go a level up                           |`-`     |
-|    actionIndicator|character shown before actions to indicate that they are actions        |`!`     |
-| directoryIndicator|character shown before directories to indicate that they are directories|`>`     |
-|     startDirectory|name of the start directory                                             |`Main`  |
-|        windowWidth|width in pixels                                                         |`600`   |
+|               font|Name of an x font (find by using `xlsfonts`)                            |`fixed` |
+|     directoryUpKey|Character that on keypress will go a level up                           |`-`     |
+|    actionIndicator|Character shown before actions to indicate that they are actions        |`!`     |
+| directoryIndicator|Character shown before directories to indicate that they are directories|`>`     |
+|     startDirectory|Name of the start directory                                             |`Main`  |
+|        windowWidth|Width in pixels                                                         |`600`   |
 |     showKeyAsUpper|1 or 0 as true or false                                                 |`0`     |
 |      showMenuNames|1 or 0 as true or false                                                 |`0`     |
 |showMenuNamesNested|1 or 0 as true or false                                                 |`0`     |
 |    backgroundColor|RGB as hexadecimals, eg: `ff122a`                                       |`ffffff`|
 |    foregroundColor|RGB as hexadecimals, eg: `ff122a`                                       |`000000`|
-|     topIndentation|numbers of pixels between the top border and the text                   |5       |
-|    leftIndentation|numbers of pixels between the left border and the text                  |5       |
-|  bottomIndentation|numbers of pixels between the bottom border and the text                |5       |
+|     topIndentation|Numbers of pixels between the top border and the text                   |`5`     |
+|    leftIndentation|Numbers of pixels between the left border and the text                  |`20`    |
+|  bottomIndentation|Numbers of pixels between the bottom border and the text                |`10`    |
 
 (An example can be found in `cfg/config`)
 
@@ -88,9 +88,9 @@ Controls are, with the current exception of `ESC`, configurable through the conf
 
 |    Key|Action            |
 |------:|:-----------------|
-|  `ESC`|closes the menu.  |
-|    `-`|goes up a level.  |
-|`A`-`Z`|select an element.|
+|  `ESC`|Closes the menu.  |
+|    `-`|Goes up a level.  |
+|`A`-`Z`|Select an element.|
 
 ### Exit
 Terminate Blezz by pressing the close button or going a level up from the starting directory.

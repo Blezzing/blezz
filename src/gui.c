@@ -21,7 +21,6 @@ int numberOfLinesToPrint;
 char** linesToPrint = NULL;
 
 xcb_connection_t* connection = NULL;
-int screenNumber = 0;
 xcb_screen_t* screen = NULL;
 xcb_drawable_t window = 0;
 
@@ -114,6 +113,7 @@ void updateWindowFlags() {
 }
 
 void connectionInit() {
+    int screenNumber = 0;
     connection = xcb_connect(NULL,&screenNumber);
 }
 

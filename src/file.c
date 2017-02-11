@@ -164,6 +164,8 @@ void importConfig(char* path) {
     const char* topIndentString = "topIndentation=";
     const char* leftIndentString = "leftIndentation=";
     const char* bottomIndentString = "bottomIndentation=";
+    const char* windowXOffsetString = "windowXOffset=";
+    const char* windowYOffsetString = "windowYOffset=";
 
     for (int i = 0; lines[i] != NULL; i++) {
         if (startsWithString(lines[i],fontString)) {
@@ -223,6 +225,14 @@ void importConfig(char* path) {
         else if (startsWithString(lines[i],bottomIndentString)) {
             assignConfigInt(&(arguments.botIndent),lines[i],bottomIndentString);
             printf("\tLoaded %.*s as: %i\n",(int)strlen(bottomIndentString)-1,bottomIndentString,arguments.botIndent);
+        }
+        else if (startsWithString(lines[i],windowXOffsetString)) {
+            assignConfigInt(&(arguments.winXOffset),lines[i],windowXOffsetString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(windowXOffsetString)-1,windowXOffsetString,arguments.winXOffset);
+        }
+        else if (startsWithString(lines[i],windowYOffsetString)) {
+            assignConfigInt(&(arguments.winYOffset),lines[i],windowYOffsetString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(windowYOffsetString)-1,windowYOffsetString,arguments.winYOffset);
         }
 
         free(lines[i]);

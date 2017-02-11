@@ -90,6 +90,8 @@ void argumentsInit() {
     arguments.topIndent = 5;
     arguments.leftIndent = 20;
     arguments.botIndent = 10;
+    arguments.winXOffset = 0;
+    arguments.winYOffset = 0;
 }
 
 void argumentsApply(int argc, char** argv) {

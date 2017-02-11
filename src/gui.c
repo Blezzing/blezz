@@ -88,8 +88,10 @@ void drawText(int16_t  x1, int16_t y1, const char *label ) {
 }
 
 void updateWindowLocation() {
-    windowX = screen->height_in_pixels / 2;
-    windowY = screen->width_in_pixels / 2 - windowWidth / 2;
+    windowX = screen->height_in_pixels / 2 + arguments.winXOffset;
+    windowY = screen->width_in_pixels / 2 - windowWidth / 2 + arguments.winYOffset;
+
+
 
     uint32_t values[] = { windowY, windowX };
     xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, values);

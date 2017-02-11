@@ -36,18 +36,19 @@ char** getLines(FILE* file) {
             memError();
         }
         
-        //get line and verify, that we aren't done
+        //break if done
         if (fgets(lines[i],line_size_to_allocate-1,file)==NULL) {
             break;
         }
         
-        //get rid of CR/LF at EOL
+        //remove newline
         int j;
-        for (j = strlen(lines[i])-1; j >= 0 && (lines[i][j] == '\n' || lines[i][j] == '\r'); j--)
-            ;
+        for (j = strlen(lines[i])-1; j >= 0 && (lines[i][j] == '\n' || lines[i][j] == '\r'); j--) {;}
         lines[i][j+1]='\0';
     }
     contentLines = i+1;
+
+    //Set line after last to null for future loop terminations
     lines[contentLines] = NULL;
     
     return lines;   
@@ -140,6 +141,26 @@ void assignConfigBool(int* target, const char* source, const char* filter) {
     *target = ((int)strtol(source+sizeFilter,NULL,10))?1:0;
 }
 
+void assignConfigXPos(xPos_enum_t* target, const char* source, const char* filter) {
+    int sizeFilter = strlen(filter);
+
+    switch(source[sizeFilter]) {
+        case ('r'): *target=XRight; break;
+        case ('m'): *target=XMid; break;
+        case ('l'): *target=XLeft; break;
+    }
+}
+
+void assignConfigYPos(yPos_enum_t* target, const char* source, const char* filter) {
+    int sizeFilter = strlen(filter);
+
+    switch(source[sizeFilter]) {
+        case ('t'): *target=YTop; break;
+        case ('m'): *target=YMid; break;
+        case ('b'): *target=YBot; break;
+    }
+}
+
 void importConfig(char* path) {
     FILE* file;
     char** lines;
@@ -150,22 +171,24 @@ void importConfig(char* path) {
     fclose(file);
 
     //config variables we accept
-    const char* fontString = "font=";
-    const char* dirUpString = "directoryUpKey=";
-    const char* actionIndicatorString = "actionIndicator=";
-    const char* directoryIndicatorString = "directoryIndicator=";
-    const char* startDirectoryString = "startDirectory=";
-    const char* windowWidthString = "windowWidth=";
-    const char* showKeyAsUpperString = "showKeyAsUpper=";
-    const char* showMenuNamesString = "showMenuNames=";
-    const char* showMenuNamesNestedString = "showMenuNamesNested=";
-    const char* foregroundColorString = "foregroundColor=";
-    const char* backgroundColorString = "backgroundColor=";
-    const char* topIndentString = "topIndentation=";
-    const char* leftIndentString = "leftIndentation=";
-    const char* bottomIndentString = "bottomIndentation=";
-    const char* windowXOffsetString = "windowXOffset=";
-    const char* windowYOffsetString = "windowYOffset=";
+    static const char* fontString                = "font=";
+    static const char* dirUpString               = "directoryUpKey=";
+    static const char* actionIndicatorString     = "actionIndicator=";
+    static const char* directoryIndicatorString  = "directoryIndicator=";
+    static const char* startDirectoryString      = "startDirectory=";
+    static const char* windowWidthString         = "windowWidth=";
+    static const char* showKeyAsUpperString      = "showKeyAsUpper=";
+    static const char* showMenuNamesString       = "showMenuNames=";
+    static const char* showMenuNamesNestedString = "showMenuNamesNested=";
+    static const char* foregroundColorString     = "foregroundColor=";
+    static const char* backgroundColorString     = "backgroundColor=";
+    static const char* topIndentString           = "topIndentation=";
+    static const char* leftIndentString          = "leftIndentation=";
+    static const char* bottomIndentString        = "bottomIndentation=";
+    static const char* windowXOffsetString       = "windowXOffset=";
+    static const char* windowYOffsetString       = "windowYOffset=";
+    static const char* windowXPosString          = "windowXPosition=";
+    static const char* windowYPosString          = "windowYPosition=";
 
     for (int i = 0; lines[i] != NULL; i++) {
         if (startsWithString(lines[i],fontString)) {
@@ -233,6 +256,14 @@ void importConfig(char* path) {
         else if (startsWithString(lines[i],windowYOffsetString)) {
             assignConfigInt(&(arguments.winYOffset),lines[i],windowYOffsetString);
             printf("\tLoaded %.*s as: %i\n",(int)strlen(windowYOffsetString)-1,windowYOffsetString,arguments.winYOffset);
+        }
+        else if (startsWithString(lines[i],windowXPosString)) {
+            assignConfigXPos(&(arguments.winXPos),lines[i],windowXPosString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(windowXPosString)-1,windowXPosString,arguments.winXPos);
+        }
+        else if (startsWithString(lines[i],windowYPosString)) {
+            assignConfigYPos(&(arguments.winYPos),lines[i],windowYPosString);
+            printf("\tLoaded %.*s as: %i\n",(int)strlen(windowYPosString)-1,windowYPosString,arguments.winYPos);
         }
 
         free(lines[i]);

@@ -88,12 +88,19 @@ void drawText(int16_t  x1, int16_t y1, const char *label ) {
 }
 
 void updateWindowLocation() {
-    windowX = screen->height_in_pixels / 2 + arguments.winXOffset;
-    windowY = screen->width_in_pixels / 2 - windowWidth / 2 + arguments.winYOffset;
+    switch (arguments.winXPos) {
+        case (XLeft)  : windowX = 0 + arguments.winYOffset; break;
+        case (XMid)   : windowX = screen->width_in_pixels / 2 - windowWidth / 2 + arguments.winYOffset; break;
+        case (XRight) : windowX = screen->width_in_pixels - windowWidth + arguments.winYOffset; break;
+    }
 
+    switch (arguments.winYPos) {
+        case (YTop) : windowY = 0 + arguments.winXOffset; break;
+        case (YMid) : windowY = screen->height_in_pixels / 2 + arguments.winXOffset; break;
+        case (YBot) : windowY = screen->height_in_pixels + arguments.winXOffset; break;
+    }
 
-
-    uint32_t values[] = { windowY, windowX };
+    uint32_t values[] = { windowX, windowY };
     xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, values);
 }
 
@@ -105,13 +112,11 @@ void updateData() {
 }
 
 void updateWindowFlags() {
-    //This code is based on conversation from https://lists.freedesktop.org/archives/xcb/2010-December/006718.html it is not pretty, but it works. Most of the time..
     xcb_intern_atom_cookie_t cookie1 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE"),"_NET_WM_WINDOW_TYPE");
-    xcb_intern_atom_reply_t* reply = xcb_intern_atom_reply(connection, cookie1, 0);
     xcb_intern_atom_cookie_t cookie2 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE_DOCK"), "_NET_WM_WINDOW_TYPE_DOCK");
+    xcb_intern_atom_reply_t* reply1 = xcb_intern_atom_reply(connection, cookie1, 0);
     xcb_intern_atom_reply_t* reply2 = xcb_intern_atom_reply(connection, cookie2, 0);
-    xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, reply->atom, XCB_ATOM_ATOM, 32, 1, &(reply2->atom));
-    //xcb_aux_sync(connection); //this is a to maybe get rid of the random borders...
+    xcb_change_property(connection, XCB_PROP_MODE_REPLACE, window, reply1->atom, XCB_ATOM_ATOM, 32, 1, &(reply2->atom));
 }
 
 void connectionInit() {

@@ -151,7 +151,7 @@ void stringifyCurrentMenuNested(char** reference) {
     currentIndex += strlen(dirStack[0]->label);
     for(int i = 1; i <= dirStackTop; i++) {
 	    sprintf(*reference+currentIndex,"%s%s:",divider,dirStack[i]->label);
-        currentIndex = strlen(*reference)-1; //strlen(dirStack[0]->label)+strlen(divider);
+        currentIndex = strlen(*reference)-1;
     }
     (*reference)[currentIndex+1] = '\0';
 }

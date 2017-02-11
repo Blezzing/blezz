@@ -8,7 +8,7 @@ With Blezz i intend to give an alternative to shortcut systems. It provides a li
 As it is possible to execute shell scripts from Blezz almost any action imaginable is possible.
 
 ## Install
-Compile with make and copy to bin directory with make install
+Compile with make and copy to `/usr/bin` directory with make install
 
 ```
 make
@@ -19,7 +19,7 @@ sudo make install
 `argp` and `xcb` and their headers are needed for building this project.
 
 ## Uninstall
-If copied to the /bin directory, make uninstall removes it, effectively uninstalling it.
+If copied to the `/usr/bin` directory, make uninstall removes it, effectively uninstalling it.
 
 _Note: Any configuration file made for the program will remain_
 

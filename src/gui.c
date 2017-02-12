@@ -10,8 +10,9 @@
 #include"errors.h"
 #include"keys.h"
 
-int windowHeight = 1;
-int windowWidth = 0;
+//Known state of the window
+int windowH = 1;
+int windowW = 1;
 int windowX = 0;
 int windowY = 0;
 
@@ -21,14 +22,14 @@ int lineHeight = 19;
 int numberOfLinesToPrint;
 char** linesToPrint = NULL;
 
+//X handles
 xcb_connection_t* connection = NULL;
 xcb_screen_t* screen = NULL;
 xcb_drawable_t window = 0;
+xcb_gc_t fontGC = 0;
+xcb_gc_t fillGC = 0;
 
-xcb_gc_t fontGC;
-xcb_gc_t fillGC;
-
-static void testCookie(xcb_void_cookie_t cookie, xcb_connection_t *connection, char *errMessage ) {
+void testCookie(xcb_void_cookie_t cookie, xcb_connection_t *connection, char *errMessage ) {
     xcb_generic_error_t *error = xcb_request_check (connection, cookie);
     if (error) {
         xcb_disconnect (connection);
@@ -39,19 +40,22 @@ static void testCookie(xcb_void_cookie_t cookie, xcb_connection_t *connection, c
 void grabKeyboard(int iters) {
     int i = 0;
     while(1) {
-        if ( xcb_connection_has_error ( connection ) ) {
+        if (xcb_connection_has_error(connection)) {
             guiError("Error in connection while grabbing keyboard");
         }
-        xcb_grab_keyboard_cookie_t cc = xcb_grab_keyboard(connection, 1, window, XCB_CURRENT_TIME, XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
-        xcb_grab_keyboard_reply_t *r = xcb_grab_keyboard_reply(connection, cc, NULL);
-        if ( r ) {
-            if ( r->status == XCB_GRAB_STATUS_SUCCESS ) {
-                free ( r );
+
+        xcb_grab_keyboard_cookie_t cookie = xcb_grab_keyboard(connection, 1, window, XCB_CURRENT_TIME, XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
+        xcb_grab_keyboard_reply_t* reply = xcb_grab_keyboard_reply(connection, cookie, NULL);
+
+        if (reply) {
+            if (reply->status == XCB_GRAB_STATUS_SUCCESS) {
+                free (reply);
                 return;
             }
-            free ( r );
+            free (reply);
         }
-        if ( (++i) > iters ) {
+
+        if ((++i)>iters) {
             break;
         }
         usleep ( 1000 );
@@ -60,7 +64,7 @@ void grabKeyboard(int iters) {
 }
 
 void releaseKeyboard() {
-    xcb_ungrab_keyboard ( connection, XCB_CURRENT_TIME );
+    xcb_ungrab_keyboard (connection, XCB_CURRENT_TIME);
 }
 
 void fontGCInit() {
@@ -91,9 +95,9 @@ void drawText(int16_t  x1, int16_t y1, const char *label ) {
 uint32_t calcXPos(){
     switch (arguments.winXPos) {
         case (XLeft)  : return 0 + arguments.winYOffset; break;
-        case (XMid)   : return screen->width_in_pixels / 2 - windowWidth / 2 + arguments.winYOffset; break;
-        case (XRight) : return screen->width_in_pixels - windowWidth + arguments.winYOffset; break;
-        default: return 0;
+        case (XMid)   : return screen->width_in_pixels / 2 - windowW / 2 + arguments.winYOffset; break;
+        case (XRight) : return screen->width_in_pixels - windowW + arguments.winYOffset; break;
+        default       : return 0;
     }
 }
 
@@ -102,7 +106,7 @@ uint32_t calcYPos(){
         case (YTop) : return 0 + arguments.winXOffset; break;
         case (YMid) : return screen->height_in_pixels / 2 + arguments.winXOffset; break;
         case (YBot) : return screen->height_in_pixels + arguments.winXOffset; break;
-        default: return 0;
+        default     : return 0;
     }
 }
 
@@ -117,12 +121,13 @@ void updateWindowGeometry() {
     xcb_configure_window(connection, window, mask, values);
     //Unsure if i have to wait now before seeing what we got
 
-    //Hear what we got
+    //Hear What we got
     xcb_get_geometry_cookie_t cookie = xcb_get_geometry(connection, window);
     xcb_get_geometry_reply_t* reply = xcb_get_geometry_reply(connection, cookie, NULL);
     windowX = reply->x;
     windowY = reply->y;
-    windowHeight = reply->height;
+    windowH = reply->height;
+    windowW = reply->width;
 }
 
 void updateData() {
@@ -132,7 +137,7 @@ void updateData() {
     dirToStrings(linesToPrint,&numberOfLinesToPrint);
 }
 
-void setWindowFlags() {
+void setFlagsForWM() {
     xcb_intern_atom_cookie_t cookie1 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE"),"_NET_WM_WINDOW_TYPE");
     xcb_intern_atom_cookie_t cookie2 = xcb_intern_atom(connection, 0, strlen("_NET_WM_WINDOW_TYPE_DOCK"), "_NET_WM_WINDOW_TYPE_DOCK");
     xcb_intern_atom_reply_t* reply1 = xcb_intern_atom_reply(connection, cookie1, 0);
@@ -157,19 +162,15 @@ void screenInit() {
 void fillGCInit() {
     fillGC = xcb_generate_id(connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_GRAPHICS_EXPOSURES;
-    uint32_t values[3] = {arguments.bgColor,arguments.bgColor,0};
-    xcb_create_gc(connection,fillGC,window,mask,values);
+    uint32_t values[3] = {arguments.bgColor, arguments.bgColor, 0};
+    xcb_create_gc(connection, fillGC, window, mask, values);
 }
 
 void windowInit() {
-    uint32_t values[3];
-    uint32_t mask = 0;
-
     window = xcb_generate_id(connection);
-    mask = XCB_CW_BACK_PIXEL| XCB_CW_EVENT_MASK;
-    values[0] = arguments.bgColor;
-    values[1] = XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_EXPOSURE;
-    xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,windowX,windowY,windowWidth,windowHeight,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
+    uint32_t mask = XCB_CW_BACK_PIXEL| XCB_CW_EVENT_MASK;
+    uint32_t values[2] = { arguments.bgColor, XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_EXPOSURE };
+    xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,windowX,windowY,windowW,windowH,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
 }
 
@@ -179,12 +180,11 @@ void mapWindow() {
 }
 
 void clearWindow(){
-    xcb_rectangle_t rect = {0, 0, windowWidth, windowHeight};
+    xcb_rectangle_t rect = {0, 0, windowW, windowH};
     xcb_poly_fill_rectangle(connection, window, fillGC, 1, &rect);
 }
 
 void drawAllText() {
-
     for (int i = 0; i < numberOfLinesToPrint; i++) {
         drawText(arguments.leftIndent,lineHeight*(i+1)+arguments.topIndent, linesToPrint[i]);
     }
@@ -194,6 +194,9 @@ int handleEvent(xcb_generic_event_t* event) {
     int shouldFinishAfter = 0;
     switch(event->response_type & ~0x80) { //why this mask?...
         case XCB_EXPOSE: {
+            drawAllText();
+            updateWindowGeometry();
+            clearWindow();
             drawAllText();
             break;
         }
@@ -232,35 +235,42 @@ int handleEvent(xcb_generic_event_t* event) {
 }
 
 void guiStart() {
-    windowWidth = arguments.windowWidth;
+    //Initialize X stuff
+    windowW = arguments.windowWidth;
     connectionInit();
     screenInit();
     windowInit();
 
+    //Unsure about calling these inits here, font gc sometimes got lost after..
     fontGCInit();
     fillGCInit();
 
-    setWindowFlags();
+    //Let the wm know how we want to be treated
+    setFlagsForWM();
 
+    //Now give us that shiny window!
     mapWindow();
 
+    //Fill with initial data..
     updateData();
     updateWindowGeometry();
 
+    //Make sure we are heady to handle events by flushing
     xcb_flush(connection);
 
+    //Grab the keyboard or die trying
     grabKeyboard(10);
 }
 
 void guiEnd() {
-    //give back control
+    //Give back control
     releaseKeyboard();
 
-    //disconnect
+    //Disconnect from X
     xcb_disconnect(connection);
     xcb_flush(connection);
 
-    //i'm sorry. This is needed to avoid hanging interface after levelup+another key pressed at the same time from root menu..
+    //I'm sorry. This is needed to avoid hanging interface after levelup+another key pressed at the same time from root menu..
     connection = xcb_connect(NULL,0);
     xcb_disconnect(connection);
     xcb_flush(connection);
@@ -269,7 +279,7 @@ void guiEnd() {
 void guiEventLoop() {
     guiStart();
 
-    int finished = 0;   //return 1 if failure
+    int finished = 0;
     xcb_generic_event_t* event;  
     while(!finished && (event = xcb_wait_for_event(connection))) {
         finished = handleEvent(event); //return 1 if an expected exit condition is met

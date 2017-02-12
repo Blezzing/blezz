@@ -11,8 +11,8 @@
 #include"keys.h"
 
 //Known state of the window
-int windowH = 1080;
-int windowW = 1920;
+int windowH = 100;
+int windowW = 100;
 int windowX = 0;
 int windowY = 0;
 
@@ -118,22 +118,14 @@ uint32_t calcWidth(){
     return arguments.windowWidth; //Possibilities for future.
 }
 
-void updateWindowGeometry() {
-    //Tell x what we want
+//Answer is handled in event chain
+void requestNewWindowGeometry() {
     uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT;
     uint32_t values[4] = {calcXPos(), calcYPos(), calcWidth(), calcHeight()};
     xcb_configure_window(connection, window, mask, values);
-    //Unsure if i have to wait now before seeing what we got
-
-    //Hear What we got
-    xcb_get_geometry_cookie_t cookie = xcb_get_geometry(connection, window);
-    xcb_get_geometry_reply_t* reply = xcb_get_geometry_reply(connection, cookie, NULL);
-    windowX = reply->x;
-    windowY = reply->y;
-    windowH = reply->height;
-    windowW = reply->width;
 }
 
+//Get data to print
 void updateData() {
     if (linesToPrint == NULL) {
         linesToPrint = allocForDirToStrings();
@@ -173,7 +165,7 @@ void fillGCInit() {
 void windowInit() {
     window = xcb_generate_id(connection);
     uint32_t mask = XCB_CW_BACK_PIXEL| XCB_CW_EVENT_MASK;
-    uint32_t values[2] = { arguments.bgColor, XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_EXPOSURE };
+    uint32_t values[2] = { arguments.bgColor, XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_STRUCTURE_NOTIFY };
     xcb_void_cookie_t windowCookie = xcb_create_window_checked(connection,screen->root_depth,window,screen->root,windowX,windowY,windowW,windowH,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,screen->root_visual,mask,values);
     testCookie(windowCookie,connection,"can't create window");
 }
@@ -194,50 +186,74 @@ void drawAllText() {
     }
 }
 
+void handleExposure(){
+    clearWindow();
+    drawAllText();
+}
+
+int handleKeyPress(xcb_generic_event_t* event) {
+    //This is not pretty, but it gets the job done
+    xcb_keycode_t keycode = ((xcb_key_press_event_t *)event)->detail;
+    if (keycode == 9) { //If the keycode represents escape
+        return 1;
+    }
+
+    char character = getCharfromKeycode(keycode);
+    int selectionResult = selectElement(character);
+
+    if (selectionResult == ELEMENT_SELECTION_OVER) {
+        return 1;
+    }
+    
+    if (selectionResult == ELEMENT_SELECTION_TRUE) {
+        updateData();
+        requestNewWindowGeometry();
+        clearWindow();
+        drawAllText();
+        return 0;
+    }
+
+    return 0;
+}
+
+void handleConfigure(xcb_generic_event_t* event){
+    //Set variable to newest known configuration.
+    windowX = ((xcb_configure_notify_event_t*)event)->x;
+    windowY = ((xcb_configure_notify_event_t*)event)->y;
+    windowH = ((xcb_configure_notify_event_t*)event)->height;
+    windowW = ((xcb_configure_notify_event_t*)event)->width;
+
+    clearWindow();
+    drawAllText();
+}
+
 int handleEvent(xcb_generic_event_t* event) {
-    int shouldFinishAfter = 0;
+    int doneFlag = 0;
     switch(event->response_type & ~0x80) { //why this mask?...
         case XCB_EXPOSE: {
-            updateWindowGeometry();
-            clearWindow();
-            drawAllText();
+            handleExposure();
             break;
         }
         case XCB_KEY_PRESS: {
-            xcb_keycode_t keycode = ((xcb_key_press_event_t *)event)->detail;
-            if (keycode == 9) {
-                shouldFinishAfter = 1;
-                break;
-            }
-
-            char character = getCharfromKeycode(keycode);
-            int selectionResult = selectElement(character);
-
-            if (selectionResult == ELEMENT_SELECTION_OVER) {
-                shouldFinishAfter = 1; 
-                break;
-            }
-            
-            if (selectionResult == ELEMENT_SELECTION_FALSE) {
-                break;
-            }
-            updateData();
-            updateWindowGeometry();
-            clearWindow();
-            drawAllText();
+            doneFlag = handleKeyPress(event);
             break;
         }
         case XCB_BUTTON_PRESS: {
-            shouldFinishAfter = 1;
+            doneFlag = 1;
+            break;
+        }
+        case XCB_CONFIGURE_NOTIFY: {
+            handleConfigure(event);
             break;
         }
     } 
     free(event);
 
-    return shouldFinishAfter;
+    return doneFlag;
 }
 
 void dimensionsInit(){
+    //Set the global values to the initial state for initializing window.
     windowH = calcHeight();
     windowW = calcWidth();
     windowX = calcXPos();
@@ -251,19 +267,19 @@ void guiStart() {
     dimensionsInit();
     windowInit();
 
+    //Let the wm know how we want to be treated
+    setFlagsForWM();
+
     //Unsure about calling these inits here, font gc sometimes got lost after..
     fontGCInit();
     fillGCInit();
-
-    //Let the wm know how we want to be treated
-    setFlagsForWM();
 
     //Now give us that shiny window!
     mapWindow();
 
     //Fill with initial data..
     updateData();
-    updateWindowGeometry();
+    requestNewWindowGeometry();
     clearWindow();
 
     //Make sure we are heady to handle events by flushing
@@ -288,6 +304,7 @@ void guiEnd() {
 }
 
 void guiEventLoop() {
+    //Get ready
     guiStart();
 
     int finished = 0;
@@ -296,5 +313,6 @@ void guiEventLoop() {
         finished = handleEvent(event); //return 1 if an expected exit condition is met
     }
 
+    //Wrap stuff up
     guiEnd();
 }

@@ -1,6 +1,4 @@
 #include<xcb/xcb.h>
-#include<xcb/xcb_ewmh.h>
-#include<xcb/xcb_icccm.h>
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
@@ -16,6 +14,8 @@ int windowHeight = 1;
 int windowWidth = 0;
 int windowX = 0;
 int windowY = 0;
+
+//Magic number, should be changed when changing font rendering method.
 int lineHeight = 19;
 
 int numberOfLinesToPrint;
@@ -88,21 +88,41 @@ void drawText(int16_t  x1, int16_t y1, const char *label ) {
     testCookie(gcCookie,connection,"can't free gc");
 }
 
-void updateWindowLocation() {
+uint32_t calcXPos(){
     switch (arguments.winXPos) {
-        case (XLeft)  : windowX = 0 + arguments.winYOffset; break;
-        case (XMid)   : windowX = screen->width_in_pixels / 2 - windowWidth / 2 + arguments.winYOffset; break;
-        case (XRight) : windowX = screen->width_in_pixels - windowWidth + arguments.winYOffset; break;
+        case (XLeft)  : return 0 + arguments.winYOffset; break;
+        case (XMid)   : return screen->width_in_pixels / 2 - windowWidth / 2 + arguments.winYOffset; break;
+        case (XRight) : return screen->width_in_pixels - windowWidth + arguments.winYOffset; break;
+        default: return 0;
     }
+}
 
+uint32_t calcYPos(){    
     switch (arguments.winYPos) {
-        case (YTop) : windowY = 0 + arguments.winXOffset; break;
-        case (YMid) : windowY = screen->height_in_pixels / 2 + arguments.winXOffset; break;
-        case (YBot) : windowY = screen->height_in_pixels + arguments.winXOffset; break;
+        case (YTop) : return 0 + arguments.winXOffset; break;
+        case (YMid) : return screen->height_in_pixels / 2 + arguments.winXOffset; break;
+        case (YBot) : return screen->height_in_pixels + arguments.winXOffset; break;
+        default: return 0;
     }
+}
 
-    uint32_t values[] = { windowX, windowY };
-    xcb_configure_window (connection, window, XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y, values);
+uint32_t calcHeight(){
+    return (numberOfLinesToPrint * 20) + arguments.topIndent + arguments.botIndent;
+}
+
+void updateWindowGeometry() {
+    //Tell x what we want
+    uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_HEIGHT;
+    uint32_t values[3] = {calcXPos(), calcYPos(), calcHeight()};
+    xcb_configure_window(connection, window, mask, values);
+    //Unsure if i have to wait now before seeing what we got
+
+    //Hear what we got
+    xcb_get_geometry_cookie_t cookie = xcb_get_geometry(connection, window);
+    xcb_get_geometry_reply_t* reply = xcb_get_geometry_reply(connection, cookie, NULL);
+    windowX = reply->x;
+    windowY = reply->y;
+    windowHeight = reply->height;
 }
 
 void updateData() {
@@ -158,20 +178,12 @@ void mapWindow() {
     testCookie(mapCookie,connection,"can't map window");
 }
 
-void updateWindowSize() {
-    windowHeight = (numberOfLinesToPrint * 20) + arguments.topIndent + arguments.botIndent;
-    xcb_configure_window(connection, window, XCB_CONFIG_WINDOW_HEIGHT, &windowHeight);
-
-}
-
 void clearWindow(){
     xcb_rectangle_t rect = {0, 0, windowWidth, windowHeight};
     xcb_poly_fill_rectangle(connection, window, fillGC, 1, &rect);
 }
 
 void drawAllText() {
-    updateWindowSize();
-    clearWindow();
 
     for (int i = 0; i < numberOfLinesToPrint; i++) {
         drawText(arguments.leftIndent,lineHeight*(i+1)+arguments.topIndent, linesToPrint[i]);
@@ -203,8 +215,9 @@ int handleEvent(xcb_generic_event_t* event) {
             if (selectionResult == ELEMENT_SELECTION_FALSE) {
                 break;
             }
-            
             updateData();
+            updateWindowGeometry();
+            clearWindow();
             drawAllText();
             break;
         }
@@ -223,19 +236,18 @@ void guiStart() {
     connectionInit();
     screenInit();
     windowInit();
+
     fontGCInit();
     fillGCInit();
 
     setWindowFlags();
 
-    clearWindow();
     mapWindow();
 
-    updateWindowLocation();
+    updateData();
+    updateWindowGeometry();
 
     xcb_flush(connection);
-
-    updateData();
 
     grabKeyboard(10);
 }

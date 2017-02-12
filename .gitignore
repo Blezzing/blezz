@@ -22,7 +22,7 @@
 
 # Executables
 .vscode/
-bin/
+blezz
 *.exe
 *.out
 *.app

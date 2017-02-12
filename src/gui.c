@@ -70,24 +70,21 @@ void releaseKeyboard() {
 void fontGCInit() {
     //get font
     xcb_font_t font = xcb_generate_id (connection);
-    xcb_void_cookie_t fontCookie = xcb_open_font_checked(connection,font,strlen(arguments.font),arguments.font);
-    testCookie(fontCookie,connection,"can't open font");
+    xcb_open_font(connection,font,strlen(arguments.font),arguments.font);
 
-    //get graphics content
+    //get graphics contentclearWindow();
     fontGC = xcb_generate_id (connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_FONT;
     uint32_t value_list[3] = { arguments.fgColor, arguments.bgColor, font };
     xcb_create_gc(connection, fontGC, window, mask, value_list);
 
     //close font
-    fontCookie = xcb_close_font_checked(connection, font);
-    testCookie(fontCookie, connection, "can't close font");
+    xcb_close_font(connection, font);
 }
 
 void drawText(int16_t  x1, int16_t y1, const char *label ) {
     fontGCInit(arguments.font);
-    xcb_void_cookie_t textCookie = xcb_image_text_8_checked(connection,strlen(label),window,fontGC,x1,y1,label);
-    testCookie(textCookie,connection,"can't paste text");
+    xcb_image_text_8(connection,strlen(label),window,fontGC,x1,y1,label);
     xcb_void_cookie_t gcCookie = xcb_free_gc(connection,fontGC);
     testCookie(gcCookie,connection,"can't free gc");
 }
@@ -186,7 +183,7 @@ void drawAllText() {
     }
 }
 
-void handleExposure(){
+void renderWindow(){
     clearWindow();
     drawAllText();
 }
@@ -208,8 +205,7 @@ int handleKeyPress(xcb_generic_event_t* event) {
     if (selectionResult == ELEMENT_SELECTION_TRUE) {
         updateData();
         requestNewWindowGeometry();
-        clearWindow();
-        drawAllText();
+        renderWindow();
         return 0;
     }
 
@@ -222,16 +218,13 @@ void handleConfigure(xcb_generic_event_t* event){
     windowY = ((xcb_configure_notify_event_t*)event)->y;
     windowH = ((xcb_configure_notify_event_t*)event)->height;
     windowW = ((xcb_configure_notify_event_t*)event)->width;
-
-    clearWindow();
-    drawAllText();
 }
 
 int handleEvent(xcb_generic_event_t* event) {
     int doneFlag = 0;
     switch(event->response_type & ~0x80) { //why this mask?...
         case XCB_EXPOSE: {
-            handleExposure();
+            renderWindow();
             break;
         }
         case XCB_KEY_PRESS: {
@@ -280,7 +273,7 @@ void guiStart() {
     //Fill with initial data..
     updateData();
     requestNewWindowGeometry();
-    clearWindow();
+    renderWindow();
 
     //Make sure we are heady to handle events by flushing
     xcb_flush(connection);

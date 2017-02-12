@@ -11,8 +11,8 @@
 #include"keys.h"
 
 //Known state of the window
-int windowH = 1;
-int windowW = 1;
+int windowH = 1080;
+int windowW = 1920;
 int windowX = 0;
 int windowY = 0;
 
@@ -95,8 +95,8 @@ void drawText(int16_t  x1, int16_t y1, const char *label ) {
 uint32_t calcXPos(){
     switch (arguments.winXPos) {
         case (XLeft)  : return 0 + arguments.winYOffset; break;
-        case (XMid)   : return screen->width_in_pixels / 2 - windowW / 2 + arguments.winYOffset; break;
-        case (XRight) : return screen->width_in_pixels - windowW + arguments.winYOffset; break;
+        case (XMid)   : return screen->width_in_pixels / 2 - arguments.windowWidth / 2 + arguments.winYOffset; break;
+        case (XRight) : return screen->width_in_pixels - arguments.windowWidth; break;
         default       : return 0;
     }
 }
@@ -114,10 +114,14 @@ uint32_t calcHeight(){
     return (numberOfLinesToPrint * 20) + arguments.topIndent + arguments.botIndent;
 }
 
+uint32_t calcWidth(){
+    return arguments.windowWidth; //Possibilities for future.
+}
+
 void updateWindowGeometry() {
     //Tell x what we want
-    uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_HEIGHT;
-    uint32_t values[3] = {calcXPos(), calcYPos(), calcHeight()};
+    uint32_t mask = XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y | XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT;
+    uint32_t values[4] = {calcXPos(), calcYPos(), calcWidth(), calcHeight()};
     xcb_configure_window(connection, window, mask, values);
     //Unsure if i have to wait now before seeing what we got
 
@@ -194,7 +198,6 @@ int handleEvent(xcb_generic_event_t* event) {
     int shouldFinishAfter = 0;
     switch(event->response_type & ~0x80) { //why this mask?...
         case XCB_EXPOSE: {
-            drawAllText();
             updateWindowGeometry();
             clearWindow();
             drawAllText();
@@ -234,11 +237,18 @@ int handleEvent(xcb_generic_event_t* event) {
     return shouldFinishAfter;
 }
 
+void dimensionsInit(){
+    windowH = calcHeight();
+    windowW = calcWidth();
+    windowX = calcXPos();
+    windowY = calcYPos();
+}
+
 void guiStart() {
     //Initialize X stuff
-    windowW = arguments.windowWidth;
     connectionInit();
     screenInit();
+    dimensionsInit();
     windowInit();
 
     //Unsure about calling these inits here, font gc sometimes got lost after..
@@ -254,6 +264,7 @@ void guiStart() {
     //Fill with initial data..
     updateData();
     updateWindowGeometry();
+    clearWindow();
 
     //Make sure we are heady to handle events by flushing
     xcb_flush(connection);

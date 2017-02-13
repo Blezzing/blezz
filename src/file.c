@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include<string.h>
+#include<unistd.h>
 
 #include"file.h"
 #include"errors.h"
@@ -165,7 +166,13 @@ void importConfig(char* path) {
     FILE* file;
     char** lines;
 
-    printf("%s %s\n","Loading config from:",path); 
+    printf("%s %s\n","Loading config from:",path);
+
+    if (access(path, R_OK) == -1) {
+        printf("\tNo config file exists, using defaults.\n");
+        return;
+    }
+ 
     file = fopen(path,"r");
     lines = getLines(file);
     fclose(file);

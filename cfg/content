@@ -3,6 +3,7 @@ dir(D,Develop)
 dir(o,Options)
 dir(a,Applications)
 dir(s,System)
+act(r,Run,krunner)
 
 Develop:
 act(b,Blezz Dev,code ~/Git/blezz)

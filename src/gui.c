@@ -72,7 +72,7 @@ void fontGCInit() {
     xcb_font_t font = xcb_generate_id (connection);
     xcb_open_font(connection,font,strlen(arguments.font),arguments.font);
 
-    //get graphics contentclearWindow();
+    //get graphics content
     fontGC = xcb_generate_id (connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_FONT;
     uint32_t value_list[3] = { arguments.fgColor, arguments.bgColor, font };
@@ -257,7 +257,12 @@ void guiStart() {
     //Initialize X stuff
     connectionInit();
     screenInit();
+
+    //Fill with initial data..
+    updateData();
     dimensionsInit();
+
+    //Prepare window
     windowInit();
 
     //Let the wm know how we want to be treated
@@ -269,11 +274,7 @@ void guiStart() {
 
     //Now give us that shiny window!
     mapWindow();
-
-    //Fill with initial data..
-    updateData();
     requestNewWindowGeometry();
-    renderWindow();
 
     //Make sure we are heady to handle events by flushing
     xcb_flush(connection);

@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<pwd.h>
+#include<string.h>
 
 #include"argpass.h"
 
@@ -64,15 +65,19 @@ char* getHomePath() {
 static struct argp argp = { options, parse_opt, "", doc };
 
 void argumentsInit() {
+    char* homePath = getHomePath();
+    char* defaultConfig = ".config/blezz/config";
+    char* defaultContent = ".config/blezz/content";
+
     arguments.silent = 0;  //TODO: if 1, be silent
     arguments.verbose = 0; //TODO: if 1, be verbose
     arguments.actS = '!';
     arguments.dirS = '>';
     arguments.dirUpKey = '-';
-    arguments.configFile = (char*)malloc(256*sizeof(char)); //Should be less... static..
-    sprintf(arguments.configFile,"%s/.config/blezz/config",getHomePath());
-    arguments.contentFile = (char*)malloc(256*sizeof(char)); //Should be less... static..
-    sprintf(arguments.contentFile,"%s/.config/blezz/content",getHomePath());
+    arguments.configFile = (char*)malloc((strlen(homePath)+strlen(defaultConfig)+1)*sizeof(char));
+    sprintf(arguments.configFile,"%s/%s",homePath,defaultConfig);
+    arguments.contentFile =  (char*)malloc((strlen(homePath)+strlen(defaultContent)+1)*sizeof(char));
+    sprintf(arguments.contentFile,"%s/%s",homePath,defaultContent);
     arguments.font = "fixed";
     arguments.startDir = "Main";
     arguments.windowWidth = 600;

@@ -78,20 +78,20 @@ The options for this file is:
 |               Name|Value                                                                      |Default |
 |------------------:|:--------------------------------------------------------------------------|:-------|
 |               font|Name of an x font. (Find by using `xlsfonts`)                              |`fixed` |
-|     directoryUpKey|Character that on keypress will go a level up.                             |`-`     |
+|     directoryUpKey|Character that on keypress will go a level up.                             |`.`     |
 |    actionIndicator|Character shown before actions to indicate that they are actions.          |`!`     |
 | directoryIndicator|Character shown before directories to indicate that they are directories.  |`>`     |
 |     startDirectory|Name of the start directory.                                               |`Main`  |
 |        windowWidth|Width in pixels.                                                           |`600`   |
 |     showKeyAsUpper|1 or 0 as true or false.                                                   |`0`     |
-|      showMenuNames|1 or 0 as true or false.                                                   |`0`     |
-|showMenuNamesNested|1 or 0 as true or false.                                                   |`0`     |
-|    backgroundColor|RGB as hexadecimals, eg: `ff122a`.                                         |`ffffff`|
-|    foregroundColor|RGB as hexadecimals, eg: `ff122a`.                                         |`000000`|
+|      showMenuNames|1 or 0 as true or false.                                                   |`1`     |
+|showMenuNamesNested|1 or 0 as true or false.                                                   |`1`     |
+|    backgroundColor|RGB as hexadecimals, eg: `ff122a`.                                         |`000000`|
+|    foregroundColor|RGB as hexadecimals, eg: `ff122a`.                                         |`ffffff`|
 |     topIndentation|Numbers of pixels between the top border and the text.                     |`5`     |
 |    leftIndentation|Numbers of pixels between the left border and the text.                    |`20`    |
 |  bottomIndentation|Numbers of pixels between the bottom border and the text.                  |`10`    |
-|    windowXPosition|Must be either `l`, `m`, or `r` sets initial placement according to screen.|`l`     |
+|    windowXPosition|Must be either `l`, `m`, or `r` sets initial placement according to screen.|`m`     |
 |    windowYPosition|Must be either `t`, `m`, or `b` sets initial placement according to screen.|`t`     |
 |      windowXOffset|Offset on the x axis in pixels from initial placement.                     |`0`     |
 |      windowYOffset|Offset on the y axis in pixels from initial placement.                     |`0`     |

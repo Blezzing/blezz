@@ -167,6 +167,14 @@ void windowInit() {
     testCookie(windowCookie,connection,"can't create window");
 }
 
+void dimensionsInit(){
+    //Set the global values to the initial state for initializing window.
+    windowH = calcHeight();
+    windowW = calcWidth();
+    windowX = calcXPos();
+    windowY = calcYPos();
+}
+
 void mapWindow() {
     xcb_void_cookie_t mapCookie = xcb_map_window_checked (connection, window);
     testCookie(mapCookie,connection,"can't map window");
@@ -243,14 +251,6 @@ int handleEvent(xcb_generic_event_t* event) {
     free(event);
 
     return doneFlag;
-}
-
-void dimensionsInit(){
-    //Set the global values to the initial state for initializing window.
-    windowH = calcHeight();
-    windowW = calcWidth();
-    windowX = calcXPos();
-    windowY = calcYPos();
 }
 
 void guiStart() {

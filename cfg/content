@@ -3,7 +3,6 @@ dir(D,Develop)
 dir(o,Options)
 dir(a,Applications)
 dir(s,System)
-act(r,Run,krunner)
 
 Develop:
 act(b,Blezz Dev,code ~/Git/blezz)
@@ -31,8 +30,12 @@ act(t,Terminal,terminator)
 act(s,Spectacle,spectacle)
 
 System:
-act(s,Shutdown,shutdown now)
-act(q,Kill Application,xkill)
+dir(s,Session)
+act(k,Kill Application,xkill)
+
+Session:
 act(x,Log Out,xfce4-session-logout)
 act(l,Lock,xflock4)
 act(r,Reboot,reboot)
+act(s,Shutdown,shutdown now)
+

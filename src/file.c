@@ -59,7 +59,7 @@ void importContent(char* path) {
     FILE* file;
     char** lines;
     Dir* root = NULL;
-    
+
     printf("%s %s\n","Loading content from:",path); 
 
     if (access(path, R_OK) == -1) {
@@ -77,6 +77,11 @@ void importContent(char* path) {
         if (lines[i][0] == '#') {//it's a comment, do not consider following possibilities
         }
 
+        else if (isActRef(lines[i])) {
+            Act* act = newActFromRef(lines[i],currDir);
+            addAct(act);
+        } 
+
         else if (isDirDecl(lines[i])) {
             Dir* dir = newDirFromDecl(lines[i]);
             dir = addDir(dir); //dir might be replaced with an already existing dir
@@ -89,12 +94,7 @@ void importContent(char* path) {
         else if (isDirRef(lines[i])) {
             Dir* dir = newDirFromRef(lines[i],currDir);
             addDir(dir);
-        }
-
-        else if (isActRef(lines[i])) {
-            Act* act = newActFromRef(lines[i],currDir);
-            addAct(act);
-        }    
+        }   
 
         free(lines[i]);    
     }

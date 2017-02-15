@@ -12,7 +12,7 @@ dir(s,SW8)
 SW8:
 act(c,Edit,code ~/Git/SW804F17)
 act(r,Remote,terminator -e "ssh user@sw8-server")
-act(f,Firefox Show,firefox sw8-server)
+act(f,Firefox Show,firefox https://sw8-server)
 act(g,Chrome Show,google-chrome sw8-server)
 
 Options:

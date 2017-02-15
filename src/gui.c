@@ -58,7 +58,7 @@ void grabKeyboard(int iters) {
         if ((++i)>iters) {
             break;
         }
-        usleep ( 1000 );
+        usleep ( 10000 );
     }
     guiError("failed grabbing a keyboard.");
 }
@@ -280,7 +280,7 @@ void guiStart() {
     xcb_flush(connection);
 
     //Grab the keyboard or die trying
-    grabKeyboard(10);
+    grabKeyboard(100);
 }
 
 void guiEnd() {

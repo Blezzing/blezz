@@ -7,7 +7,13 @@ act(r,Run,krunner)
 
 Develop:
 act(b,Blezz Dev,code ~/Git/blezz)
-act(s,SW8,code ~/Git/SW804F17)
+dir(s,SW8)
+
+SW8:
+act(c,Edit,code ~/Git/SW804F17)
+act(r,Remote,terminator -e "ssh user@sw8-server")
+act(f,Firefox Show,firefox sw8-server)
+act(g,Chrome Show,google-chrome sw8-server)
 
 Options:
 dir(b,Blezz Options)
@@ -20,7 +26,7 @@ act(o,Blezz Options,leafpad ~/Git/blezz/cfg/config)
 Applications:
 act(f,Firefox,firefox)
 act(c,Chrome,google-chrome)
-act(t,Terminal,konsole)
+act(t,Terminal,terminator)
 act(s,Spectacle,spectacle)
 
 System:

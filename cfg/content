@@ -7,6 +7,7 @@ act(r,Run,krunner)
 
 Develop:
 act(b,Blezz Dev,code ~/Git/blezz)
+act(a,Advanced Programming, code ~/ap)
 dir(s,SW8)
 
 SW8:
@@ -31,4 +32,7 @@ act(s,Spectacle,spectacle)
 
 System:
 act(s,Shutdown,shutdown now)
+act(q,Kill Application,xkill)
+act(x,Log Out,xfce4-session-logout)
+act(l,Lock,xflock4)
 act(r,Reboot,reboot)

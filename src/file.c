@@ -61,6 +61,13 @@ void importContent(char* path) {
     Dir* root = NULL;
     
     printf("%s %s\n","Loading content from:",path); 
+
+    if (access(path, R_OK) == -1) {
+        printf("\tNo content file exists, showing error.\n");
+        startDir = newDirFromDecl("Nothing to show");
+        return;
+    }
+    
     file = fopen(path,"r"); //add errorhandling here, missing folders give segfault
     lines = getLines(file);
     fclose(file);

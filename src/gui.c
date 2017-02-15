@@ -276,11 +276,11 @@ void guiStart() {
     mapWindow();
     requestNewWindowGeometry();
 
-    //Make sure we are heady to handle events by flushing
-    xcb_flush(connection);
-
     //Grab the keyboard or die trying
     grabKeyboard(100);
+
+    //Make sure we are heady to handle events by flushing
+    xcb_flush(connection);
 }
 
 void guiEnd() {

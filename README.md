@@ -10,7 +10,7 @@ With Blezz i intend to give an alternative to shortcut systems. It provides a li
 As it is possible to execute shell scripts from Blezz almost any action imaginable is possible.
 
 ## Install
-Compile with make and copy to `/usr/bin` directory with make install
+Inspect the makefile if you feel paranoid. Afterwards, do:
 
 ```
 make
@@ -18,9 +18,11 @@ sudo make install
 ```
 
 ### Dependencies
-`argp` and `xcb` and their headers are needed for building this project.
+**Building**: `argp` and `xcb` and their headers are needed for building this project.
 
-These packages can normally be found in your distros repos, but their name varies, below i list the packages, that should contain the needed libraries, for some distros. 
+**Running**: systemd is required to only allow one running instance. 
+
+The packages can normally be found in your distros repos, but their name varies, below i list the packages, that should contain the needed libraries, for some distros. 
 
 If any mistakes are found, please let me know in the issues.
 
@@ -119,7 +121,7 @@ Controls are, with the current exception of `ESC`, configurable through the conf
 |    Key|Action            |
 |------:|:-----------------|
 |  `ESC`|Closes the menu.  |
-|    `-`|Goes up a level.  |
+|    `.`|Goes up a level.  |
 |`A`-`Z`|Select an element.|
 
 ### Exit

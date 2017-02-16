@@ -277,7 +277,7 @@ void guiStart() {
     requestNewWindowGeometry();
 
     //Grab the keyboard or die trying
-    grabKeyboard(100);
+    grabKeyboard(1000);
 
     //Make sure we are heady to handle events by flushing
     xcb_flush(connection);

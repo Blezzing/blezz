@@ -5,15 +5,15 @@ dir(a,Applications)
 dir(s,System)
 
 Develop:
-act(b,Blezz Dev,code ~/Git/blezz)
-act(a,Advanced Programming, code ~/ap)
+act(b,Blezz,code ~/Git/blezz)
+act(p,Advanced Programming, code ~/ap)
+act(a,AlarmPi,code ~/Git/alarmPi) 
 dir(s,SW8)
 
 SW8:
-act(c,Edit,code ~/Git/SW804F17)
+act(p,Project,code ~/Git/SW804F17)
 act(r,Remote,terminator -e "ssh user@sw8-server")
-act(f,Firefox Show,firefox https://sw8-server)
-act(g,Chrome Show,google-chrome sw8-server)
+act(c,Chrome Show,google-chrome https://172.25.11.106)
 
 Options:
 dir(b,Blezz Options)

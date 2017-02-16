@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-c -g -Wall
 LDFLAGS=
-SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c ./src/gui.c ./src/argpass.c ./src/keys.c
+SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c ./src/gui.c ./src/argpass.c ./src/keys.c ./src/mutex.c
 LIBS=-lxcb
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=./blezz
@@ -22,6 +22,8 @@ run:
 	$(EXECUTABLE)
 
 install:
+	mkdir -p /var/run/blezz
+	chmod 777 /var/run/blezz
 	cp $(EXECUTABLE) $(INSTALLDIR)blezz
 
 uninstall:

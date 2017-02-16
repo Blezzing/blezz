@@ -22,8 +22,7 @@ run:
 	$(EXECUTABLE)
 
 install:
-	mkdir -p /var/run/blezz
-	chmod 777 /var/run/blezz
+	cp ./systemd/blezz.conf /usr/lib/tmpfiles.d/blezz.conf
 	cp $(EXECUTABLE) $(INSTALLDIR)blezz
 
 uninstall:

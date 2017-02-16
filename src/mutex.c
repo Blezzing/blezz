@@ -24,6 +24,7 @@ void applicationRelease(){
 int applicationFirstInstance(){
     if(rc) { //we could not get a lock
         if(EWOULDBLOCK == errno){
+            printf("Application lock is already taken, refuses to start a new instance.\n");
             return 0;
         }
         else{

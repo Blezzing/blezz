@@ -1,19 +1,25 @@
 #include"errors.h"
+#include"mutex.h"
 
 #include<stdio.h>
 #include<stdlib.h>
 
+void exitWithError(int errorCode){
+    applicationRelease();
+    exit(errorCode);
+}
+
 void memError(){
     fprintf(stderr,"Out of memory.\n");
-    exit(-1);
+    exitWithError(-1);
 }
 
 void fileError(){
     fprintf(stderr,"Error opening file.\n");
-    exit(-2);
+    exitWithError(-2);
 }
 
 void guiError(char* message) {
     fprintf(stderr,"Error in gui, got the message: %s\n",message);
-    exit(-3);
+    exitWithError(-3);
 }

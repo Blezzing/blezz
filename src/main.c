@@ -30,6 +30,8 @@ int main(int argc, char *argv[]) {
     //Show GUI
     guiEventLoop();
     
+    applicationRelease();
+
     //Belive it or not, success!
 	return 0;
 }

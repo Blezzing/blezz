@@ -7,6 +7,9 @@
 #include"argpass.h"
 #include"data.h"
 
+int configLines;
+int contentLines;
+
 char** getLines(FILE* file) {
     int lines_to_allocate = 64;
     int line_size_to_allocate = 100;

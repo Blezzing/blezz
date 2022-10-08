@@ -19,7 +19,7 @@ struct arguments {
     char *configFile, *contentFile, *font, *startDir;
 };
 
-struct arguments arguments;
+extern struct arguments arguments;
 
 void argumentsInit();
 void argumentsApply(int argc,char** argv);

@@ -6,6 +6,8 @@
 
 #include"argpass.h"
 
+struct arguments arguments;
+
 //argp content
 const char *argp_program_version = "Blezz 0.1";
 const char *argp_program_bug_address = "<mmhmaster@hotmail.com>";

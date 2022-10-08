@@ -24,15 +24,15 @@ struct Act{
 };
 
 //Shared variables
-int   savedDirs;
-int   savedActs;
-Dir** allDirs;
-Act** allActs;
+extern int   savedDirs;
+extern int   savedActs;
+extern Dir** allDirs;
+extern Act** allActs;
 
-int   dirStackTop;
-Dir** dirStack;
+extern int   dirStackTop;
+extern Dir** dirStack;
 
-Dir* startDir;
+extern Dir* startDir;
 
 //Functions
 int isDirDecl(char* string);

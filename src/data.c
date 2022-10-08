@@ -13,6 +13,7 @@ Dir** allDirs = NULL;
 Act** allActs = NULL;
 int dirStackTop = -1;
 Dir** dirStack;
+Dir* startDir;
 
 int isDirRef(char* string){
     return strlen(string)>6 && (strncmp(string,"dir(",4) == 0);

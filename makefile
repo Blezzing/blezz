@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-c -g -Wall
 LDFLAGS=
 SOURCES=./src/main.c ./src/errors.c ./src/data.c ./src/file.c ./src/gui.c ./src/argpass.c ./src/keys.c ./src/mutex.c
-LIBS=-lxcb
+LIBS=-lxcb -lxcb-keysyms
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=./blezz
 INSTALLDIR=/usr/bin/

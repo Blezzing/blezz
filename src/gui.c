@@ -1,4 +1,6 @@
 #include<xcb/xcb.h>
+#include<xcb/xcb_keysyms.h>
+#include<xkbcommon/xkbcommon-keysyms.h>
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
@@ -25,6 +27,7 @@ char** linesToPrint = NULL;
 //X handles
 xcb_connection_t* connection = NULL;
 xcb_screen_t* screen = NULL;
+xcb_key_symbols_t *ksyms = NULL;
 xcb_drawable_t window = 0;
 xcb_gc_t fontGC = 0;
 xcb_gc_t fillGC = 0;
@@ -152,6 +155,10 @@ void screenInit() {
     screen = xcb_setup_roots_iterator(xcb_get_setup(connection)).data;
 }
 
+void ksymsInit() {
+    ksyms = xcb_key_symbols_alloc(connection);
+}
+
 void fillGCInit() {
     fillGC = xcb_generate_id(connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND | XCB_GC_GRAPHICS_EXPOSURES;
@@ -197,19 +204,30 @@ void renderWindow(){
 }
 
 int handleKeyPress(xcb_generic_event_t* event) {
-    //This is not pretty, but it gets the job done
-    xcb_keycode_t keycode = ((xcb_key_press_event_t *)event)->detail;
-    if (keycode == 9) { //If the keycode represents escape
+    xcb_keycode_t keycode;
+    uint16_t state;
+    xcb_keysym_t keysym;
+
+    state = ((xcb_key_press_event_t *)event)->state;
+
+    if (state != 0) { //If a modifier(ctrl/shift/super/etc) is pressed
+        return 0;
+    }
+
+    keycode = ((xcb_key_press_event_t *)event)->detail;
+    keysym = xcb_key_symbols_get_keysym(ksyms, keycode, 0);
+
+    if (keysym == XKB_KEY_Escape) { //If the keycode represents escape
         return 1;
     }
 
-    char character = getCharfromKeycode(keycode);
+    char character = getCharfromKeysym(keysym);
     int selectionResult = selectElement(character);
 
     if (selectionResult == ELEMENT_SELECTION_OVER) {
         return 1;
     }
-    
+
     if (selectionResult == ELEMENT_SELECTION_TRUE) {
         updateData();
         requestNewWindowGeometry();
@@ -257,6 +275,7 @@ void guiStart() {
     //Initialize X stuff
     connectionInit();
     screenInit();
+    ksymsInit();
 
     //Fill with initial data..
     updateData();
@@ -286,6 +305,9 @@ void guiStart() {
 void guiEnd() {
     //Give back control
     releaseKeyboard();
+
+    // Destroy ksyms
+    xcb_key_symbols_free(ksyms);
 
     //Disconnect from X
     xcb_disconnect(connection);

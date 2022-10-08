@@ -2,7 +2,8 @@
 #define KEYSHEADER_H
 
 #include<xcb/xcb.h>
+#include<xkbcommon/xkbcommon-keysyms.h>
 
-char getCharfromKeycode(int keyCode);
+char getCharfromKeysym(int keysym);
 
 #endif

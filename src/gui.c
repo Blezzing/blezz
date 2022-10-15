@@ -209,13 +209,8 @@ int handleKeyPress(xcb_generic_event_t* event) {
     xcb_keysym_t keysym;
 
     state = ((xcb_key_press_event_t *)event)->state;
-
-    if (state != 0) { //If a modifier(ctrl/shift/super/etc) is pressed
-        return 0;
-    }
-
     keycode = ((xcb_key_press_event_t *)event)->detail;
-    keysym = xcb_key_symbols_get_keysym(ksyms, keycode, 0);
+    keysym = xcb_key_symbols_get_keysym(ksyms, keycode, state);
 
     if (keysym == XKB_KEY_Escape) { //If the keycode represents escape
         return 1;

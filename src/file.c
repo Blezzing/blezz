@@ -191,7 +191,6 @@ void importConfig(char* path) {
     static const char* directoryIndicatorString  = "directoryIndicator=";
     static const char* startDirectoryString      = "startDirectory=";
     static const char* windowWidthString         = "windowWidth=";
-    static const char* showKeyAsUpperString      = "showKeyAsUpper=";
     static const char* showMenuNamesString       = "showMenuNames=";
     static const char* showMenuNamesNestedString = "showMenuNamesNested=";
     static const char* foregroundColorString     = "foregroundColor=";
@@ -230,10 +229,6 @@ void importConfig(char* path) {
         else if (startsWithString(lines[i],windowWidthString)) {
             assignConfigInt(&(arguments.windowWidth),lines[i],windowWidthString);
             printf("\tLoaded %.*s as: %i\n",(int)strlen(windowWidthString)-1,windowWidthString,arguments.windowWidth);
-        }
-        else if (startsWithString(lines[i],showKeyAsUpperString)) {
-            assignConfigBool(&(arguments.keyAsUpper),lines[i],showKeyAsUpperString);
-            printf("\tLoaded %.*s as: %i\n",(int)strlen(showKeyAsUpperString)-1,showKeyAsUpperString,arguments.keyAsUpper);
         }
         else if (startsWithString(lines[i],showMenuNamesString)) {
             assignConfigBool(&(arguments.showMenuNames),lines[i],showMenuNamesString);

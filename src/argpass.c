@@ -81,7 +81,6 @@ void argumentsInit() {
     arguments.font = "fixed";
     arguments.startDir = "Main";
     arguments.windowWidth = 600;
-    arguments.keyAsUpper = 0;
     arguments.showMenuNames = 1;
     arguments.showMenuNamesNested = 1;
     arguments.fgColor = 0xffffff;

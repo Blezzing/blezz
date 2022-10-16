@@ -173,13 +173,13 @@ char** dirToStrings(char** ret, int* count) {
 
     for(int i = 0; i < savedDirs; i++) {
         if (allDirs[i]->parent == dir) {
-            sprintf(ret[index++],"%c [%c] %s",arguments.dirS, (arguments.keyAsUpper?toupper(allDirs[i]->key):allDirs[i]->key), allDirs[i]->label);
+            sprintf(ret[index++],"%c [%c] %s",arguments.dirS, allDirs[i]->key, allDirs[i]->label);
         }
     }
     
     for(int i = 0; i < savedActs; i++) {
         if (allActs[i]->parent == dir) {
-            sprintf(ret[index++],"%c [%c] %s",arguments.actS, (arguments.keyAsUpper?toupper(allActs[i]->key):allActs[i]->key), allActs[i]->label);
+            sprintf(ret[index++],"%c [%c] %s",arguments.actS, allActs[i]->key, allActs[i]->label);
         }
     }  
 

@@ -12,7 +12,7 @@ typedef enum {
 //structure for sharing informations about arguments
 struct arguments {
     char *args[2];
-    int silent, verbose, windowWidth, keyAsUpper, showMenuNames, showMenuNamesNested, fgColor, bgColor, topIndent, leftIndent, botIndent, winXOffset, winYOffset;
+    int silent, verbose, windowWidth, showMenuNames, showMenuNamesNested, fgColor, bgColor, topIndent, leftIndent, botIndent, winXOffset, winYOffset;
     xPos_enum_t winXPos;
     yPos_enum_t winYPos;
     char dirUpKey, actS, dirS;

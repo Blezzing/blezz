@@ -4,7 +4,6 @@ actionIndicator=~
 directoryIndicator=/
 startDirectory=Main
 windowWidth=1920
-showKeyAsUpper=1
 showMenuNames=1
 showMenuNamesNested=1
 backgroundColor=313742

@@ -32,7 +32,7 @@ Dir* newDirFromRef(char* string, Dir* parent){
     int labelLength = strlen(string)-labelIndex-1;
     
     Dir* dir = (Dir*)malloc(sizeof(Dir));
-    dir->key = tolower(string[keyIndex]);
+    dir->key = string[keyIndex];
     dir->label = (char*)malloc(sizeof(char)*(labelLength+1));
     strncpy(dir->label,string+labelIndex,labelLength);
     dir->label[labelLength]='\0';
@@ -65,7 +65,7 @@ Act* newActFromRef(char* string, Dir* parent){
     int disownStringLength = 8;
 
     Act* act = (Act*)malloc(sizeof(Act));
-    act->key = tolower(string[keyIndex]);
+    act->key = string[keyIndex];
     act->label = (char*)malloc(sizeof(char)*(labelLength+1));
     strncpy(act->label,string+labelIndex,labelLength);
     act->label[labelLength] = '\0';

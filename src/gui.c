@@ -210,7 +210,7 @@ int handleKeyPress(xcb_generic_event_t* event) {
 
     state = ((xcb_key_press_event_t *)event)->state;
     keycode = ((xcb_key_press_event_t *)event)->detail;
-    keysym = xcb_key_symbols_get_keysym(ksyms, keycode, state);
+    keysym = xcb_key_symbols_get_keysym(ksyms, keycode, state & XCB_MOD_MASK_SHIFT);
 
     if (keysym == XKB_KEY_Escape) { //If the keycode represents escape
         return 1;
